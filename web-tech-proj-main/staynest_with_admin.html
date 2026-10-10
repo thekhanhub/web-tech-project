@@ -1,0 +1,2144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StayNest — Find Your Perfect Stay</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
+  <style>
+    :root {
+      --red: #ff385c;
+      --red-dark: #e0283e;
+      --bg: #fafafa;
+      --white: #ffffff;
+      --dark: #111111;
+      --gray: #767676;
+      --light-gray: #f4f4f4;
+      --border: #e0e0e0;
+      --green: #43a047;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-md: 0 10px 30px rgba(0,0,0,0.12);
+      --shadow-lg: 0 20px 50px rgba(0,0,0,0.2);
+      --radius: 16px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:"DM Sans",sans-serif; background:var(--bg); color:var(--dark); }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 60px; background:var(--white);
+      box-shadow:var(--shadow-sm); position:sticky; top:0; z-index:100;
+    }
+    .logo { font-family:"Playfair Display",serif; font-size:26px; font-weight:800; color:var(--red); cursor:pointer; }
+    .nav-links { display:flex; align-items:center; gap:4px; }
+    .nav-links a {
+      padding:8px 14px; text-decoration:none; color:var(--dark);
+      font-weight:600; font-size:14px; border-radius:8px;
+      transition:all 0.2s; cursor:pointer;
+    }
+    .nav-links a:hover, .nav-links a.active { color:var(--red); background:rgba(255,56,92,0.07); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
+    .nav-search {
+      display:flex; align-items:center; background:var(--light-gray);
+      border-radius:30px; padding:6px 14px; gap:6px;
+    }
+    .nav-search input {
+      border:none; outline:none; background:transparent;
+      font-family:"DM Sans",sans-serif; font-size:14px; width:150px;
+    }
+    .nav-search button { background:none; border:none; cursor:pointer; color:var(--gray); font-size:16px; }
+    .nav-btn {
+      background:var(--red); color:white; border:none; padding:9px 18px;
+      border-radius:20px; font-weight:700; font-size:13px; cursor:pointer;
+      transition:background 0.2s; font-family:"DM Sans",sans-serif;
+    }
+    .nav-btn:hover { background:var(--red-dark); }
+    .nav-btn.outline {
+      background:transparent; color:var(--red);
+      border:2px solid var(--red);
+    }
+    .nav-btn.outline:hover { background:var(--red); color:white; }
+    .wishlist-btn {
+      position:relative; background:none; border:none; cursor:pointer;
+      font-size:20px; padding:6px;
+    }
+    .wishlist-count {
+      position:absolute; top:0; right:0; background:var(--red); color:white;
+      font-size:10px; font-weight:700; width:17px; height:17px;
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      display:none;
+    }
+
+    /* ── PAGES ── */
+    .page { display:none; }
+    .page.active { display:block; }
+
+    /* ── HERO ── */
+    .hero {
+      height:560px;
+      background:url("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267") center/cover no-repeat;
+      display:flex; flex-direction:column; justify-content:center;
+      align-items:center; text-align:center; color:white; padding:20px; position:relative;
+    }
+    .hero::after {
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(to bottom,rgba(0,0,0,0.3),rgba(0,0,0,0.58));
+    }
+    .hero > * { position:relative; z-index:2; }
+    .hero h1 { font-family:"Playfair Display",serif; font-size:58px; font-weight:800; margin-bottom:14px; }
+    .hero p { font-size:19px; margin-bottom:30px; opacity:0.9; }
+    .search-box {
+      background:white; padding:10px 10px 10px 22px;
+      border-radius:50px; box-shadow:0 8px 28px rgba(0,0,0,0.28);
+      display:flex; gap:10px; align-items:center;
+    }
+    .search-box input {
+      padding:10px 6px; border:none; outline:none; width:260px;
+      font-family:"DM Sans",sans-serif; font-size:15px;
+    }
+    .search-box button {
+      background:var(--red); border:none; color:white; padding:12px 28px;
+      border-radius:40px; cursor:pointer; font-weight:700; font-size:15px;
+      transition:background 0.25s;
+    }
+    .search-box button:hover { background:var(--red-dark); }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display:flex; justify-content:center; gap:60px;
+      background:var(--white); padding:28px; box-shadow:var(--shadow-sm);
+    }
+    .stat { text-align:center; }
+    .stat .num { font-family:"Playfair Display",serif; font-size:30px; font-weight:800; color:var(--red); }
+    .stat .lbl { font-size:13px; color:var(--gray); margin-top:3px; }
+
+    /* ── SECTION TITLES ── */
+    .section-title { font-family:"Playfair Display",serif; text-align:center; font-size:36px; margin-top:60px; font-weight:800; }
+    .section-sub { text-align:center; color:var(--gray); margin-top:8px; font-size:16px; }
+
+    /* ── CAROUSEL ── */
+    .carousel-section { max-width:1000px; margin:50px auto 0; padding:0 20px; }
+    .carousel-wrapper { position:relative; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-lg); }
+    .carousel-track { display:flex; transition:transform 0.6s cubic-bezier(0.77,0,0.18,1); }
+    .carousel-slide { min-width:100%; position:relative; }
+    .carousel-slide img { width:100%; height:460px; object-fit:cover; display:block; }
+    .carousel-caption {
+      position:absolute; bottom:0; left:0; right:0;
+      background:linear-gradient(transparent,rgba(0,0,0,0.75));
+      color:white; padding:50px 36px 30px;
+    }
+    .carousel-caption h3 { font-family:"Playfair Display",serif; font-size:28px; margin-bottom:6px; }
+    .carousel-caption p { font-size:15px; opacity:0.85; }
+    .carousel-btn {
+      position:absolute; top:50%; transform:translateY(-50%);
+      background:rgba(255,255,255,0.92); border:none; border-radius:50%;
+      width:48px; height:48px; font-size:20px; cursor:pointer; z-index:10;
+      box-shadow:0 4px 14px rgba(0,0,0,0.18); display:flex; align-items:center;
+      justify-content:center; transition:all 0.2s;
+    }
+    .carousel-btn:hover { background:var(--red); color:white; transform:translateY(-50%) scale(1.08); }
+    .carousel-btn.prev { left:16px; }
+    .carousel-btn.next { right:16px; }
+    .carousel-dots { display:flex; justify-content:center; gap:8px; margin-top:16px; }
+    .dot { width:10px; height:10px; border-radius:50%; background:var(--border); cursor:pointer; transition:all 0.3s; }
+    .dot.active { background:var(--red); transform:scale(1.3); }
+    .carousel-controls { display:flex; justify-content:center; gap:14px; margin-top:14px; }
+    .ctrl-btn {
+      padding:9px 28px; border-radius:30px; border:2px solid var(--red);
+      font-weight:700; font-size:14px; cursor:pointer; transition:all 0.25s;
+      font-family:"DM Sans",sans-serif;
+    }
+    .ctrl-btn.play { background:var(--red); color:white; }
+    .ctrl-btn.play:hover { background:var(--red-dark); border-color:var(--red-dark); }
+    .ctrl-btn.pause { background:transparent; color:var(--red); }
+    .ctrl-btn.pause:hover { background:var(--red); color:white; }
+
+    /* ── CARDS ── */
+    .container { display:flex; flex-wrap:wrap; justify-content:center; gap:28px; padding:50px 60px; }
+    .card {
+      width:270px; background:var(--white); border-radius:var(--radius);
+      overflow:hidden; box-shadow:var(--shadow-md); transition:all 0.35s;
+    }
+    .card:hover { transform:translateY(-10px); box-shadow:var(--shadow-lg); }
+    .card-img-wrap { position:relative; }
+    .card img { width:100%; height:185px; object-fit:cover; display:block; }
+    .fav-btn {
+      position:absolute; top:12px; right:12px; background:rgba(255,255,255,0.85);
+      border:none; border-radius:50%; width:34px; height:34px; font-size:17px;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.15);
+    }
+    .fav-btn:hover { background:white; transform:scale(1.1); }
+    .fav-btn.active { color:var(--red); }
+    .card-badge {
+      position:absolute; top:12px; left:12px; background:var(--red); color:white;
+      font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px;
+    }
+    .card-body { padding:18px; }
+    .card-body h3 { font-family:"Playfair Display",serif; margin-bottom:5px; font-size:18px; }
+    .card-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+    .location { font-size:13px; color:var(--gray); }
+    .rating { font-size:13px; color:#f59e0b; font-weight:600; }
+    .price { color:var(--red); font-weight:700; margin-bottom:14px; font-size:16px; }
+    .card-actions { display:flex; gap:8px; }
+    .card-body button {
+      flex:1; padding:10px; border:none; background:var(--red); color:white;
+      border-radius:10px; font-weight:700; cursor:pointer; font-family:"DM Sans",sans-serif;
+      font-size:13px; transition:background 0.25s;
+    }
+    .card-body button:hover { background:var(--red-dark); }
+    .card-body button.outline-btn {
+      background:transparent; border:2px solid var(--red); color:var(--red);
+    }
+    .card-body button.outline-btn:hover { background:var(--red); color:white; }
+
+    /* ── FEATURES ── */
+    .features { background:var(--white); padding:60px 40px; display:flex; justify-content:center; flex-wrap:wrap; gap:50px; }
+    .feature { text-align:center; max-width:200px; }
+    .feature .icon { font-size:38px; margin-bottom:12px; }
+    .feature h3 { margin:10px 0 8px; color:var(--red); font-size:17px; font-weight:700; }
+    .feature p { font-size:14px; color:var(--gray); line-height:1.6; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-section { background:linear-gradient(135deg,#fff8f9,#fff); padding:70px 40px; }
+    .testimonials-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; margin-top:40px; }
+    .testimonial-card {
+      background:var(--white); border-radius:var(--radius); padding:28px;
+      width:300px; box-shadow:var(--shadow-sm); border-left:4px solid var(--red);
+    }
+    .testimonial-card .stars { color:#f59e0b; font-size:18px; margin-bottom:12px; }
+    .testimonial-card p { font-size:14px; color:#444; line-height:1.7; margin-bottom:16px; font-style:italic; }
+    .testimonial-author { display:flex; align-items:center; gap:12px; }
+    .author-avatar {
+      width:42px; height:42px; border-radius:50%; background:var(--red);
+      color:white; display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:16px;
+    }
+    .author-info .name { font-weight:700; font-size:14px; }
+    .author-info .loc { font-size:12px; color:var(--gray); }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      background:linear-gradient(135deg,#ff385c,#e0283e); color:white;
+      padding:70px 40px; text-align:center;
+    }
+    .newsletter h2 { font-family:"Playfair Display",serif; font-size:36px; margin-bottom:12px; }
+    .newsletter p { font-size:16px; opacity:0.9; margin-bottom:30px; }
+    .newsletter-form { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; }
+    .newsletter-form input {
+      padding:14px 22px; border:none; border-radius:30px; font-family:"DM Sans",sans-serif;
+      font-size:15px; width:320px; outline:none;
+    }
+    .newsletter-form button {
+      padding:14px 32px; background:#111; color:white; border:none; border-radius:30px;
+      font-weight:700; font-size:15px; cursor:pointer; transition:background 0.2s;
+    }
+    .newsletter-form button:hover { background:#333; }
+
+    /* ── EXPLORE PAGE ── */
+    .page-hero {
+      height:280px; display:flex; flex-direction:column; justify-content:center;
+      align-items:center; text-align:center; color:white; position:relative;
+    }
+    .page-hero::after { content:""; position:absolute; inset:0; background:rgba(0,0,0,0.5); }
+    .page-hero > * { position:relative; z-index:2; }
+    .page-hero h1 { font-family:"Playfair Display",serif; font-size:44px; font-weight:800; margin-bottom:10px; }
+    .page-hero p { font-size:17px; opacity:0.9; }
+
+    .filters-bar {
+      background:var(--white); padding:20px 60px; box-shadow:var(--shadow-sm);
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:center;
+    }
+    .filter-select, .filter-input {
+      padding:10px 16px; border:1.8px solid var(--border); border-radius:30px;
+      font-family:"DM Sans",sans-serif; font-size:14px; outline:none;
+      transition:border-color 0.2s; background:var(--white); cursor:pointer;
+    }
+    .filter-select:focus, .filter-input:focus { border-color:var(--red); }
+    .filter-btn {
+      padding:10px 24px; background:var(--red); color:white; border:none;
+      border-radius:30px; font-weight:700; font-size:14px; cursor:pointer;
+      transition:background 0.2s; font-family:"DM Sans",sans-serif;
+    }
+    .filter-btn:hover { background:var(--red-dark); }
+    .filter-btn.clear { background:transparent; color:var(--gray); border:1.8px solid var(--border); }
+    .filter-btn.clear:hover { border-color:var(--dark); color:var(--dark); }
+    .results-count { text-align:center; padding:20px; font-size:15px; color:var(--gray); }
+    .results-count span { font-weight:700; color:var(--dark); }
+
+    /* ── DESTINATIONS GRID (Explore) ── */
+    .destinations-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:24px; padding:20px 60px 60px; }
+    .dest-card {
+      width:240px; border-radius:var(--radius); overflow:hidden;
+      box-shadow:var(--shadow-sm); cursor:pointer; transition:all 0.3s; background:var(--white);
+    }
+    .dest-card:hover { transform:translateY(-8px); box-shadow:var(--shadow-lg); }
+    .dest-card img { width:100%; height:160px; object-fit:cover; display:block; }
+    .dest-card-body { padding:14px; }
+    .dest-card-body h4 { font-family:"Playfair Display",serif; font-size:17px; margin-bottom:4px; }
+    .dest-card-body p { font-size:12px; color:var(--gray); }
+    .dest-card-body .dest-count { font-size:12px; color:var(--red); font-weight:700; margin-top:6px; }
+
+    /* ── LISTINGS PAGE ── */
+    .listings-layout { display:flex; gap:30px; padding:30px 60px 60px; max-width:1300px; margin:0 auto; }
+    .listings-sidebar {
+      width:260px; flex-shrink:0; background:var(--white);
+      border-radius:var(--radius); padding:24px; box-shadow:var(--shadow-sm); height:fit-content;
+      position:sticky; top:85px;
+    }
+    .listings-sidebar h3 { font-family:"Playfair Display",serif; font-size:20px; margin-bottom:20px; }
+    .filter-group { margin-bottom:20px; }
+    .filter-group label { display:block; font-size:13px; font-weight:700; color:#444; margin-bottom:8px; }
+    .filter-group select, .filter-group input[type="text"] {
+      width:100%; padding:10px 12px; border:1.8px solid var(--border); border-radius:10px;
+      font-family:"DM Sans",sans-serif; font-size:14px; outline:none; transition:border-color 0.2s;
+    }
+    .filter-group select:focus, .filter-group input[type="text"]:focus { border-color:var(--red); }
+    .price-range { display:flex; gap:8px; }
+    .price-range input { flex:1; }
+    .checkbox-group { display:flex; flex-direction:column; gap:8px; }
+    .checkbox-group label { display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; font-weight:400; color:var(--dark); }
+    .checkbox-group input[type="checkbox"] { accent-color:var(--red); width:16px; height:16px; }
+    .apply-filter-btn {
+      width:100%; padding:12px; background:var(--red); color:white; border:none;
+      border-radius:10px; font-weight:700; cursor:pointer; font-family:"DM Sans",sans-serif;
+      font-size:15px; transition:background 0.2s; margin-top:10px;
+    }
+    .apply-filter-btn:hover { background:var(--red-dark); }
+    .clear-filter-btn {
+      width:100%; padding:10px; background:transparent; color:var(--gray);
+      border:1.8px solid var(--border); border-radius:10px; font-weight:600;
+      cursor:pointer; font-family:"DM Sans",sans-serif; font-size:14px; margin-top:8px;
+      transition:all 0.2s;
+    }
+    .clear-filter-btn:hover { border-color:var(--dark); color:var(--dark); }
+    .listings-main { flex:1; }
+    .listings-toolbar {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:20px; flex-wrap:wrap; gap:12px;
+    }
+    .listings-toolbar h2 { font-family:"Playfair Display",serif; font-size:24px; }
+    .sort-select {
+      padding:9px 16px; border:1.8px solid var(--border); border-radius:30px;
+      font-family:"DM Sans",sans-serif; font-size:14px; outline:none; cursor:pointer;
+    }
+    .listings-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:24px; }
+    .no-results { text-align:center; padding:60px; color:var(--gray); }
+    .no-results .nr-icon { font-size:60px; margin-bottom:16px; }
+    .no-results h3 { font-size:22px; margin-bottom:8px; color:var(--dark); }
+
+    /* ── BOOKINGS PAGE ── */
+    .bookings-page { padding:40px 60px; max-width:1000px; margin:0 auto; }
+    .bookings-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
+    .bookings-header h2 { font-family:"Playfair Display",serif; font-size:32px; }
+    .clear-bookings-btn {
+      padding:10px 22px; background:transparent; color:#e53935;
+      border:2px solid #e53935; border-radius:30px; font-weight:700;
+      font-size:14px; cursor:pointer; transition:all 0.2s;
+    }
+    .clear-bookings-btn:hover { background:#e53935; color:white; }
+    .booking-card {
+      background:var(--white); border-radius:var(--radius); padding:24px;
+      box-shadow:var(--shadow-sm); margin-bottom:20px; display:flex; gap:20px;
+      align-items:flex-start; border-left:5px solid var(--red);
+      animation:slideIn 0.4s ease;
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:none} }
+    .booking-card-icon { font-size:36px; flex-shrink:0; margin-top:4px; }
+    .booking-info { flex:1; }
+    .booking-info h3 { font-family:"Playfair Display",serif; font-size:20px; margin-bottom:8px; }
+    .booking-details { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .booking-detail { background:var(--light-gray); border-radius:10px; padding:10px 14px; }
+    .booking-detail .bd-label { font-size:11px; color:var(--gray); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+    .booking-detail .bd-val { font-size:14px; font-weight:700; margin-top:3px; }
+    .booking-status { display:inline-block; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:700; margin-top:12px; }
+    .status-confirmed { background:#e8f5e9; color:#2e7d32; }
+    .status-cancelled { background:#ffebee; color:#c62828; }
+    .booking-cancel-btn {
+      padding:8px 20px; background:transparent; color:#e53935;
+      border:2px solid #e53935; border-radius:20px; font-size:13px; font-weight:700;
+      cursor:pointer; transition:all 0.2s; margin-top:12px;
+    }
+    .booking-cancel-btn:hover { background:#e53935; color:white; }
+    .empty-bookings { text-align:center; padding:80px 20px; }
+    .empty-bookings .eb-icon { font-size:70px; margin-bottom:20px; }
+    .empty-bookings h3 { font-family:"Playfair Display",serif; font-size:26px; margin-bottom:10px; }
+    .empty-bookings p { color:var(--gray); font-size:15px; margin-bottom:24px; }
+    .go-listings-btn {
+      display:inline-block; padding:12px 32px; background:var(--red); color:white;
+      border:none; border-radius:30px; font-weight:700; font-size:15px; cursor:pointer;
+      transition:background 0.2s;
+    }
+    .go-listings-btn:hover { background:var(--red-dark); }
+
+    /* ── CONTACT PAGE ── */
+    .contact-page { max-width:1100px; margin:0 auto; padding:50px 60px; }
+    .contact-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:50px; margin-top:40px; }
+    .contact-info h2 { font-family:"Playfair Display",serif; font-size:30px; margin-bottom:14px; }
+    .contact-info p { color:var(--gray); line-height:1.7; margin-bottom:28px; }
+    .contact-item { display:flex; align-items:flex-start; gap:14px; margin-bottom:22px; }
+    .contact-icon { font-size:26px; flex-shrink:0; margin-top:2px; }
+    .contact-item h4 { font-size:15px; font-weight:700; margin-bottom:3px; }
+    .contact-item p { color:var(--gray); font-size:14px; margin:0; }
+    .contact-form-box { background:var(--white); border-radius:var(--radius); padding:36px; box-shadow:var(--shadow-md); }
+    .contact-form-box h3 { font-family:"Playfair Display",serif; font-size:26px; margin-bottom:22px; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .form-group { margin-bottom:16px; text-align:left; }
+    .form-group label { display:block; font-size:13px; font-weight:700; margin-bottom:5px; color:#444; }
+    .form-group input, .form-group select, .form-group textarea {
+      width:100%; padding:11px 14px; border:1.8px solid var(--border); border-radius:10px;
+      font-family:"DM Sans",sans-serif; font-size:14px; outline:none;
+      transition:all 0.25s; background:#fafafa;
+    }
+    .form-group textarea { resize:vertical; min-height:100px; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color:var(--red); box-shadow:0 0 0 3px rgba(255,56,92,0.12); background:white;
+    }
+    .form-group input.invalid, .form-group select.invalid, .form-group textarea.invalid {
+      border-color:#e53935; box-shadow:0 0 0 3px rgba(229,57,53,0.1);
+    }
+    .form-group input.valid, .form-group select.valid, .form-group textarea.valid {
+      border-color:var(--green); box-shadow:0 0 0 3px rgba(67,160,71,0.1);
+    }
+    .err-msg { display:none; font-size:12px; color:#cc0000; font-style:italic; margin-top:4px; }
+    .submit-btn {
+      width:100%; padding:13px; background:var(--red); color:white; border:none;
+      border-radius:10px; cursor:pointer; font-weight:700; font-size:15px;
+      font-family:"DM Sans",sans-serif; margin-top:6px; transition:background 0.25s;
+    }
+    .submit-btn:hover { background:var(--red-dark); }
+    .faq-section { padding:70px 60px; background:var(--white); }
+    .faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:40px; max-width:1100px; margin-left:auto; margin-right:auto; }
+    .faq-item { background:var(--bg); border-radius:var(--radius); padding:24px; }
+    .faq-item h4 { font-size:16px; font-weight:700; margin-bottom:8px; color:var(--dark); }
+    .faq-item p { font-size:14px; color:var(--gray); line-height:1.7; }
+
+    /* ── MODAL ── */
+    .modal {
+      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+      background:rgba(0,0,0,0.55); justify-content:center; align-items:center;
+      z-index:200; backdrop-filter:blur(3px);
+    }
+    .modal-content {
+      background:white; padding:36px 32px; border-radius:20px; width:440px;
+      max-height:90vh; overflow-y:auto; text-align:center; position:relative;
+      box-shadow:0 30px 80px rgba(0,0,0,0.3); animation:popIn 0.3s ease;
+    }
+    @keyframes popIn { from{transform:scale(0.88);opacity:0} to{transform:scale(1);opacity:1} }
+    .close-btn { position:absolute; top:12px; right:18px; font-size:24px; cursor:pointer; color:var(--gray); background:none; border:none; }
+    .close-btn:hover { color:var(--dark); }
+    .modal-content h2 { font-family:"Playfair Display",serif; font-size:26px; font-weight:800; margin-bottom:20px; }
+    .modal-tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:22px; }
+    .modal-tab {
+      flex:1; padding:12px; border:none; background:none; font-family:"DM Sans",sans-serif;
+      font-size:15px; font-weight:600; cursor:pointer; color:var(--gray); transition:all 0.2s;
+    }
+    .modal-tab.active { color:var(--red); border-bottom:2px solid var(--red); margin-bottom:-2px; }
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+    .social-btn {
+      width:100%; padding:12px; border:1.8px solid var(--border); border-radius:10px;
+      font-family:"DM Sans",sans-serif; font-size:14px; font-weight:600; cursor:pointer;
+      background:white; margin-bottom:12px; transition:all 0.2s; display:flex;
+      align-items:center; justify-content:center; gap:10px;
+    }
+    .social-btn:hover { border-color:var(--dark); background:var(--light-gray); }
+    .divider { display:flex; align-items:center; gap:12px; margin:16px 0; }
+    .divider span { color:var(--gray); font-size:13px; }
+    .divider::before, .divider::after { content:""; flex:1; height:1px; background:var(--border); }
+
+    /* ── JQUERY UI DIALOG OVERRIDES ── */
+    #confirmDialog { display:none; font-family:"DM Sans",sans-serif; text-align:center; padding:10px 0; }
+    #confirmDialog .dialog-icon { font-size:52px; margin-bottom:12px; }
+    #confirmDialog h3 { font-family:"Playfair Display",serif; font-size:22px; margin-bottom:10px; }
+    #confirmDialog p { color:var(--gray); font-size:15px; line-height:1.6; }
+    .ui-dialog { border-radius:18px!important; box-shadow:0 30px 80px rgba(0,0,0,0.3)!important; border:none!important; font-family:"DM Sans",sans-serif!important; overflow:hidden!important; }
+    .ui-dialog-titlebar { background:var(--red)!important; color:white!important; border:none!important; border-radius:0!important; padding:14px 20px!important; font-family:"Playfair Display",serif!important; font-size:17px!important; }
+    .ui-dialog-titlebar-close { color:white!important; background:transparent!important; border:none!important; }
+    .ui-button { background:var(--red)!important; color:white!important; border:none!important; border-radius:8px!important; font-family:"DM Sans",sans-serif!important; font-weight:700!important; padding:8px 28px!important; cursor:pointer!important; transition:background 0.25s!important; }
+    .ui-button:hover { background:var(--red-dark)!important; }
+
+    /* ── TOAST ── */
+    #toast-container { position:fixed; bottom:30px; right:30px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
+    .toast {
+      background:#111; color:white; padding:14px 22px; border-radius:12px;
+      font-size:14px; font-weight:500; box-shadow:var(--shadow-lg);
+      animation:toastIn 0.3s ease; display:flex; align-items:center; gap:10px;
+      max-width:320px;
+    }
+    .toast.success { border-left:4px solid #43a047; }
+    .toast.error { border-left:4px solid #e53935; }
+    .toast.info { border-left:4px solid var(--red); }
+    @keyframes toastIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:none} }
+    @keyframes toastOut { to{opacity:0;transform:translateX(40px)} }
+
+    /* ── FOOTER ── */
+    .footer { background:#111; color:white; padding:50px 60px 30px; margin-top:0; }
+    .footer-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:40px; margin-bottom:40px; }
+    .footer-col h4 { font-family:"Playfair Display",serif; font-size:18px; margin-bottom:14px; color:white; }
+    .footer-col p, .footer-col a { font-size:14px; color:rgba(255,255,255,0.6); line-height:1.8; text-decoration:none; display:block; }
+    .footer-col a:hover { color:var(--red); }
+    .footer-bottom { border-top:1px solid rgba(255,255,255,0.1); padding-top:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+    .footer-bottom p { font-size:13px; color:rgba(255,255,255,0.5); }
+    .footer-social { display:flex; gap:12px; }
+    .footer-social a { color:rgba(255,255,255,0.6); font-size:18px; transition:color 0.2s; }
+    .footer-social a:hover { color:var(--red); }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px) {
+      .navbar { padding:14px 20px; }
+      .nav-search { display:none; }
+      .hero h1 { font-size:36px; }
+      .container { padding:40px 20px; }
+      .listings-layout { flex-direction:column; padding:20px; }
+      .listings-sidebar { width:100%; position:static; }
+      .contact-layout { grid-template-columns:1fr; }
+      .footer-grid { grid-template-columns:1fr 1fr; }
+      .faq-grid { grid-template-columns:1fr; }
+      .booking-details { grid-template-columns:1fr 1fr; }
+      .destinations-grid { padding:20px; }
+      .form-row { grid-template-columns:1fr; }
+    }
+    @media(max-width:600px) {
+      .navbar { flex-wrap:wrap; gap:10px; padding:12px 16px; }
+      .nav-links { display:none; }
+      .hero h1 { font-size:28px; }
+      .search-box { flex-direction:column; border-radius:16px; }
+      .search-box input { width:100%; }
+      .stats-bar { flex-wrap:wrap; gap:30px; }
+      .footer-grid { grid-template-columns:1fr; }
+      .bookings-page { padding:20px; }
+      .booking-details { grid-template-columns:1fr; }
+      .modal-content { width:94vw; }
+    }
+
+    /* ── ADMIN PANEL ── */
+    .admin-page { max-width:1200px; margin:0 auto; padding:40px 40px 60px; }
+    .admin-header-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:32px; flex-wrap:wrap; gap:14px;
+    }
+    .admin-header-bar h2 { font-family:"Playfair Display",serif; font-size:30px; }
+    .admin-badge {
+      background:linear-gradient(135deg,var(--red),#ff6b35); color:white;
+      padding:5px 16px; border-radius:20px; font-size:12px; font-weight:700;
+      letter-spacing:0.5px;
+    }
+    .admin-php-note {
+      background:#fff8f0; border:1.5px solid #f59e0b; border-radius:12px;
+      padding:14px 20px; margin-bottom:28px; font-size:13px; color:#92400e;
+      display:flex; gap:10px; align-items:flex-start; line-height:1.6;
+    }
+    .admin-php-note .note-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+    .admin-php-note code {
+      background:#fef3c7; padding:1px 6px; border-radius:4px;
+      font-family:monospace; font-size:12px; color:#92400e;
+    }
+
+    /* PHP Code Block */
+    .php-block {
+      background:#1e1e2e; border-radius:14px; margin-bottom:28px;
+      overflow:hidden; box-shadow:var(--shadow-md);
+    }
+    .php-block-header {
+      background:#181825; padding:10px 18px; display:flex; align-items:center;
+      gap:10px; border-bottom:1px solid rgba(255,255,255,0.07);
+    }
+    .php-dot { width:12px; height:12px; border-radius:50%; }
+    .php-dot.r { background:#ff5f57; }
+    .php-dot.y { background:#febc2e; }
+    .php-dot.g { background:#28c840; }
+    .php-block-title { color:rgba(255,255,255,0.5); font-size:12px; font-family:monospace; margin-left:6px; }
+    .php-block pre {
+      padding:18px 22px; font-family:'Courier New',monospace; font-size:13px;
+      line-height:1.7; color:#cdd6f4; overflow-x:auto; margin:0;
+    }
+    .php-block pre .kw { color:#cba6f7; } /* keywords */
+    .php-block pre .fn { color:#89b4fa; } /* functions */
+    .php-block pre .str { color:#a6e3a1; } /* strings */
+    .php-block pre .cmt { color:#585b70; font-style:italic; } /* comments */
+    .php-block pre .var { color:#f38ba8; } /* variables */
+    .php-block pre .num { color:#fab387; } /* numbers */
+
+    /* CRUD Form Card */
+    .admin-card {
+      background:var(--white); border-radius:var(--radius); padding:28px;
+      box-shadow:var(--shadow-md); margin-bottom:28px;
+    }
+    .admin-card h3 {
+      font-family:"Playfair Display",serif; font-size:22px; margin-bottom:20px;
+      padding-bottom:12px; border-bottom:2px solid var(--light-gray);
+      display:flex; align-items:center; gap:10px;
+    }
+    .admin-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .admin-form-grid .full { grid-column:1/-1; }
+    .admin-form-group { display:flex; flex-direction:column; gap:5px; }
+    .admin-form-group label { font-size:13px; font-weight:700; color:#444; }
+    .admin-form-group input, .admin-form-group select, .admin-form-group textarea {
+      padding:10px 14px; border:1.8px solid var(--border); border-radius:10px;
+      font-family:"DM Sans",sans-serif; font-size:14px; outline:none; transition:all 0.2s;
+    }
+    .admin-form-group input:focus, .admin-form-group select:focus, .admin-form-group textarea:focus {
+      border-color:var(--red); box-shadow:0 0 0 3px rgba(255,56,92,0.1);
+    }
+    .admin-form-group input.err, .admin-form-group select.err { border-color:#e53935; }
+    .admin-form-group .err-tip { font-size:11px; color:#e53935; display:none; }
+    .admin-form-group input.ok { border-color:var(--green); }
+    .admin-btn-row { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
+    .admin-btn {
+      padding:11px 28px; border:none; border-radius:10px; font-weight:700;
+      font-size:14px; cursor:pointer; font-family:"DM Sans",sans-serif; transition:all 0.2s;
+    }
+    .admin-btn.primary { background:var(--red); color:white; }
+    .admin-btn.primary:hover { background:var(--red-dark); }
+    .admin-btn.secondary { background:var(--light-gray); color:var(--dark); }
+    .admin-btn.secondary:hover { background:var(--border); }
+    .admin-btn.warning { background:#f59e0b; color:white; }
+    .admin-btn.warning:hover { background:#d97706; }
+
+    /* Alert messages */
+    .admin-alert {
+      padding:12px 18px; border-radius:10px; font-size:14px; font-weight:500;
+      margin-bottom:18px; display:none; align-items:center; gap:10px;
+    }
+    .admin-alert.success { background:#e8f5e9; color:#2e7d32; border-left:4px solid #43a047; }
+    .admin-alert.error { background:#ffebee; color:#c62828; border-left:4px solid #e53935; }
+    .admin-alert.info { background:#e3f2fd; color:#1565c0; border-left:4px solid #1976d2; }
+
+    /* Records Table */
+    .admin-table-wrap { overflow-x:auto; border-radius:12px; box-shadow:var(--shadow-sm); }
+    .admin-table {
+      width:100%; border-collapse:collapse; font-size:13.5px;
+    }
+    .admin-table thead tr { background:linear-gradient(135deg,var(--red),#ff6b35); color:white; }
+    .admin-table thead th { padding:13px 16px; text-align:left; font-weight:700; white-space:nowrap; }
+    .admin-table tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
+    .admin-table tbody tr:hover { background:#fff5f6; }
+    .admin-table tbody tr.editing { background:#fff8f0; }
+    .admin-table tbody td { padding:12px 16px; vertical-align:middle; }
+    .admin-table .td-actions { display:flex; gap:8px; }
+    .tbl-btn {
+      padding:6px 14px; border:none; border-radius:8px; font-size:12px;
+      font-weight:700; cursor:pointer; font-family:"DM Sans",sans-serif; transition:all 0.2s;
+    }
+    .tbl-btn.edit { background:#e3f2fd; color:#1565c0; }
+    .tbl-btn.edit:hover { background:#1976d2; color:white; }
+    .tbl-btn.delete { background:#ffebee; color:#c62828; }
+    .tbl-btn.delete:hover { background:#e53935; color:white; }
+    .tbl-badge { padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; }
+    .tbl-badge.villa { background:#e8f5e9; color:#2e7d32; }
+    .tbl-badge.apartment { background:#e3f2fd; color:#1565c0; }
+    .tbl-badge.cabin { background:#fff3e0; color:#e65100; }
+    .tbl-badge.resort { background:#f3e5f5; color:#6a1b9a; }
+    .tbl-badge.cottage { background:#e0f2f1; color:#004d40; }
+    .admin-table-footer { padding:14px 16px; background:var(--light-gray); font-size:13px; color:var(--gray); border-top:1px solid var(--border); }
+
+    /* Stats row */
+    .admin-stats { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+    .admin-stat-card {
+      background:var(--white); border-radius:14px; padding:20px; box-shadow:var(--shadow-sm);
+      border-top:3px solid var(--red); text-align:center;
+    }
+    .admin-stat-card .as-num { font-family:"Playfair Display",serif; font-size:28px; font-weight:800; color:var(--red); }
+    .admin-stat-card .as-lbl { font-size:12px; color:var(--gray); margin-top:4px; }
+
+    @media(max-width:900px) {
+      .admin-form-grid { grid-template-columns:1fr; }
+      .admin-stats { grid-template-columns:1fr 1fr; }
+      .php-two-col { grid-template-columns:1fr !important; }
+    }
+    @media(max-width:600px) {
+      .admin-page { padding:20px; }
+      .admin-stats { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="logo" onclick="showPage('home')">StayNest</div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" data-page="home" class="active">Home</a>
+    <a onclick="showPage('explore')" data-page="explore">Explore</a>
+    <a onclick="showPage('listings')" data-page="listings">Listings</a>
+    <a onclick="showPage('bookings')" data-page="bookings">My Bookings</a>
+    <a onclick="showPage('contact')" data-page="contact">Contact</a>
+    <a onclick="showPage('admin')" data-page="admin">⚙️ Admin</a>
+  </div>
+  <div class="nav-right">
+    <div class="nav-search">
+      <input type="text" id="navSearchInput" placeholder="Search destinations…"/>
+      <button onclick="handleNavSearch()">🔍</button>
+    </div>
+    <button class="wishlist-btn" onclick="showPage('bookings')" title="Wishlist">
+      ❤️ <span class="wishlist-count" id="wishlistCount">0</span>
+    </button>
+    <button class="nav-btn outline" id="loginNavBtn">Login</button>
+    <button class="nav-btn" id="registerNavBtn">Register</button>
+  </div>
+</nav>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+
+<!-- ══════════════════════════════════════════════════
+  PAGE: HOME
+══════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <div class="hero">
+    <h1>Find Your Perfect Stay</h1>
+    <p>Discover unique homes, villas and apartments around the world</p>
+    <div class="search-box">
+      <input type="text" id="heroSearch" placeholder="Where are you going?" />
+      <button onclick="handleHeroSearch()">Search</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="num">4M+</div><div class="lbl">Happy Guests</div></div>
+    <div class="stat"><div class="num">150+</div><div class="lbl">Countries</div></div>
+    <div class="stat"><div class="num">800K+</div><div class="lbl">Properties</div></div>
+    <div class="stat"><div class="num">4.9★</div><div class="lbl">Avg Rating</div></div>
+  </div>
+
+  <!-- CAROUSEL -->
+  <h2 class="section-title">Explore Destinations</h2>
+  <p class="section-sub">Swipe through our most beautiful properties worldwide</p>
+
+  <section class="carousel-section">
+    <div class="carousel-wrapper">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750" alt="Villa Bali"/>
+          <div class="carousel-caption"><h3>Private Villa — Bali, Indonesia</h3><p>Secluded tropical luxury with private pool &amp; ocean view</p></div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Beach House"/>
+          <div class="carousel-caption"><h3>Luxury Beach House — California, USA</h3><p>Wake up to the sound of waves every morning</p></div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb" alt="Cabin"/>
+          <div class="carousel-caption"><h3>Mountain Cabin — Switzerland</h3><p>Cozy alpine retreat surrounded by snow-capped peaks</p></div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1449844908441-8829872d2607" alt="Apartment"/>
+          <div class="carousel-caption"><h3>Modern City Apartment — New York, USA</h3><p>Skyline views, walking distance to all major attractions</p></div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4" alt="Santorini"/>
+          <div class="carousel-caption"><h3>Infinity Pool Resort — Santorini, Greece</h3><p>Breathtaking Aegean Sea views from your private terrace</p></div>
+        </div>
+      </div>
+      <button class="carousel-btn prev" id="prevBtn">&#8592;</button>
+      <button class="carousel-btn next" id="nextBtn">&#8594;</button>
+    </div>
+    <div class="carousel-dots" id="carouselDots"></div>
+    <div class="carousel-controls">
+      <button class="ctrl-btn play" id="playBtn">&#9654; Play</button>
+      <button class="ctrl-btn pause" id="pauseBtn">&#9208; Pause</button>
+    </div>
+  </section>
+
+  <!-- POPULAR STAYS -->
+  <h2 class="section-title">Popular Stays</h2>
+  <p class="section-sub">Handpicked homes loved by our community</p>
+
+  <div class="container" id="home-listings"></div>
+
+  <!-- FEATURES -->
+  <div class="features">
+    <div class="feature"><div class="icon">🏡</div><h3>Unique Homes</h3><p>Stay in beautiful homes and apartments around the world.</p></div>
+    <div class="feature"><div class="icon">🔒</div><h3>Secure Booking</h3><p>Safe and trusted booking process for every guest.</p></div>
+    <div class="feature"><div class="icon">💰</div><h3>Best Prices</h3><p>Find great places at unbeatable affordable prices.</p></div>
+    <div class="feature"><div class="icon">⭐</div><h3>Top Rated</h3><p>Every listing is reviewed by real verified guests.</p></div>
+    <div class="feature"><div class="icon">🛎️</div><h3>24/7 Support</h3><p>Round-the-clock help whenever you need it.</p></div>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div class="testimonials-section">
+    <h2 class="section-title">What Guests Say</h2>
+    <p class="section-sub">Real reviews from real travelers</p>
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"Absolutely stunning villa in Bali. The staff were incredible and the private pool was a dream. Would book again in a heartbeat!"</p>
+        <div class="testimonial-author"><div class="author-avatar">AK</div><div class="author-info"><div class="name">Aisha Khan</div><div class="loc">🇵🇰 Islamabad, Pakistan</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★★</div>
+        <p>"The beach house exceeded all expectations. Perfect location, clean, well-equipped. StayNest made the whole process so seamless."</p>
+        <div class="testimonial-author"><div class="author-avatar">JM</div><div class="author-info"><div class="name">James Mitchell</div><div class="loc">🇬🇧 London, UK</div></div></div>
+      </div>
+      <div class="testimonial-card">
+        <div class="stars">★★★★☆</div>
+        <p>"Great experience overall. The mountain cabin was cozy and the views were spectacular. Highly recommend for a winter getaway!"</p>
+        <div class="testimonial-author"><div class="author-avatar">SL</div><div class="author-info"><div class="name">Sofia Lopez</div><div class="loc">🇪🇸 Madrid, Spain</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="newsletter">
+    <h2>Get Exclusive Deals</h2>
+    <p>Subscribe to our newsletter and never miss a great offer</p>
+    <div class="newsletter-form">
+      <input type="email" id="newsletterEmail" placeholder="Enter your email address…"/>
+      <button onclick="subscribeNewsletter()">Subscribe Now</button>
+    </div>
+  </div>
+
+</div><!-- end home -->
+
+<!-- ══════════════════════════════════════════════════
+  PAGE: EXPLORE
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-explore">
+  <div class="page-hero" style="background:url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800') center/cover">
+    <h1>Explore Destinations</h1>
+    <p>Discover your next adventure from our curated list</p>
+  </div>
+
+  <div class="filters-bar">
+    <select class="filter-select" id="exploreRegion">
+      <option value="">All Regions</option>
+      <option value="asia">Asia</option>
+      <option value="europe">Europe</option>
+      <option value="america">Americas</option>
+      <option value="middle-east">Middle East</option>
+      <option value="africa">Africa</option>
+    </select>
+    <select class="filter-select" id="exploreType">
+      <option value="">All Types</option>
+      <option value="beach">🏖️ Beach</option>
+      <option value="mountain">⛰️ Mountain</option>
+      <option value="city">🏙️ City</option>
+      <option value="countryside">🌿 Countryside</option>
+    </select>
+    <input class="filter-input" type="text" id="exploreSearch" placeholder="Search destination…"/>
+    <button class="filter-btn" onclick="filterDestinations()">🔍 Search</button>
+    <button class="filter-btn clear" onclick="clearExploreFilters()">✕ Clear</button>
+  </div>
+
+  <p class="results-count" id="destResultsCount"></p>
+  <div class="destinations-grid" id="destinationsGrid"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  PAGE: LISTINGS
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-listings">
+  <div class="page-hero" style="background:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9') center/cover">
+    <h1>All Listings</h1>
+    <p>Browse and filter our full collection of properties</p>
+  </div>
+
+  <div class="listings-layout">
+    <!-- SIDEBAR -->
+    <aside class="listings-sidebar">
+      <h3>🔧 Filters</h3>
+      <div class="filter-group">
+        <label>Location</label>
+        <select id="filterLocation">
+          <option value="">All Locations</option>
+          <option value="usa">USA</option>
+          <option value="europe">Europe</option>
+          <option value="asia">Asia</option>
+          <option value="middle-east">Middle East</option>
+          <option value="oceania">Oceania</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Property Type</label>
+        <select id="filterType">
+          <option value="">All Types</option>
+          <option value="villa">Villa</option>
+          <option value="apartment">Apartment</option>
+          <option value="cabin">Cabin</option>
+          <option value="resort">Resort</option>
+          <option value="cottage">Cottage</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Price Range (per night)</label>
+        <div class="price-range">
+          <input type="text" id="priceMin" placeholder="Min $"/>
+          <input type="text" id="priceMax" placeholder="Max $"/>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Amenities</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" value="pool" class="amenity-check"/> 🏊 Pool</label>
+          <label><input type="checkbox" value="wifi" class="amenity-check"/> 📶 WiFi</label>
+          <label><input type="checkbox" value="gym" class="amenity-check"/> 🏋️ Gym</label>
+          <label><input type="checkbox" value="kitchen" class="amenity-check"/> 🍳 Kitchen</label>
+          <label><input type="checkbox" value="parking" class="amenity-check"/> 🚗 Parking</label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>Min Rating</label>
+        <select id="filterRating">
+          <option value="">Any Rating</option>
+          <option value="4.5">4.5+</option>
+          <option value="4.0">4.0+</option>
+          <option value="3.5">3.5+</option>
+        </select>
+      </div>
+      <button class="apply-filter-btn" onclick="applyFilters()">Apply Filters</button>
+      <button class="clear-filter-btn" onclick="clearFilters()">Clear All</button>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="listings-main">
+      <div class="listings-toolbar">
+        <h2 id="listingsTitle">All Properties</h2>
+        <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+          <option value="default">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Highest Rated</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </div>
+      <div class="listings-grid" id="listingsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  PAGE: MY BOOKINGS
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-bookings">
+  <div class="page-hero" style="background:url('https://images.unsplash.com/photo-1586348943529-beaae6c28db9') center/cover">
+    <h1>My Bookings</h1>
+    <p>Track and manage all your reservations</p>
+  </div>
+  <div class="bookings-page">
+    <div class="bookings-header">
+      <h2>Your Reservations</h2>
+      <button class="clear-bookings-btn" onclick="clearAllBookings()">🗑️ Clear All</button>
+    </div>
+    <div id="bookingsList"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  PAGE: CONTACT
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-hero" style="background:url('https://images.unsplash.com/photo-1423769264967-49ee660f0a60') center/cover">
+    <h1>Contact Us</h1>
+    <p>We'd love to hear from you</p>
+  </div>
+
+  <div class="contact-page">
+    <div class="contact-layout">
+      <div class="contact-info">
+        <h2>Get In Touch</h2>
+        <p>Have questions, feedback, or need support? Our team is here to help. Reach out through any of the channels below.</p>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div><h4>Address</h4><p>COMSATS University Islamabad,<br>Attock Campus, Pakistan</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div><h4>Phone</h4><p>+92 300 000 0000<br>Mon–Fri, 9am–6pm PKT</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div><h4>Email</h4><p>support@staynest.com<br>partnerships@staynest.com</p></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">💬</div>
+          <div><h4>Live Chat</h4><p>Available 24/7 via our app<br>Average response: 2 minutes</p></div>
+        </div>
+      </div>
+      <div class="contact-form-box">
+        <h3>Send a Message</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cName">First Name</label>
+            <input type="text" id="cName" placeholder="Ali"/>
+            <span class="err-msg" id="cNameErr">Please enter your first name.</span>
+          </div>
+          <div class="form-group">
+            <label for="cLast">Last Name</label>
+            <input type="text" id="cLast" placeholder="Hassan"/>
+            <span class="err-msg" id="cLastErr">Please enter your last name.</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cEmail">Email Address</label>
+          <input type="email" id="cEmail" placeholder="you@email.com"/>
+          <span class="err-msg" id="cEmailErr">Enter a valid email address.</span>
+        </div>
+        <div class="form-group">
+          <label for="cSubject">Subject</label>
+          <select id="cSubject">
+            <option value="">Select subject</option>
+            <option value="booking">Booking Issue</option>
+            <option value="property">Property Listing</option>
+            <option value="payment">Payment &amp; Refund</option>
+            <option value="other">Other</option>
+          </select>
+          <span class="err-msg" id="cSubjectErr">Please select a subject.</span>
+        </div>
+        <div class="form-group">
+          <label for="cMessage">Message</label>
+          <textarea id="cMessage" placeholder="Write your message here…"></textarea>
+          <span class="err-msg" id="cMsgErr">Message must be at least 20 characters.</span>
+        </div>
+        <button class="submit-btn" id="contactSubmitBtn">Send Message ✉️</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-section">
+    <h2 class="section-title" style="margin-top:0">Frequently Asked Questions</h2>
+    <p class="section-sub">Quick answers to common questions</p>
+    <div class="faq-grid">
+      <div class="faq-item"><h4>How do I cancel a booking?</h4><p>Go to My Bookings and click "Cancel" on the reservation. Cancellations made 48+ hours before check-in are fully refunded.</p></div>
+      <div class="faq-item"><h4>Are the listings verified?</h4><p>Yes! Every property on StayNest is verified by our team through photos, documents, and guest reviews before being listed.</p></div>
+      <div class="faq-item"><h4>What payment methods are accepted?</h4><p>We accept all major credit/debit cards, JazzCash, Easypaisa, and bank transfers in supported regions.</p></div>
+      <div class="faq-item"><h4>Can I host my property on StayNest?</h4><p>Absolutely! Click "Register" and choose "Become a Host". Our team will guide you through the listing process.</p></div>
+      <div class="faq-item"><h4>Is my personal data secure?</h4><p>We use bank-level encryption (256-bit SSL) and never share your data with third parties without explicit consent.</p></div>
+      <div class="faq-item"><h4>How do I contact a host?</h4><p>Once your booking is confirmed, you'll receive the host's contact details via email. You can also message them through our app.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  PAGE: ADMIN PANEL (PHP CRUD Module)
+══════════════════════════════════════════════════ -->
+<div class="page" id="page-admin">
+  <div class="page-hero" style="background:url('https://images.unsplash.com/photo-1555066931-4365d14bab8c') center/cover">
+    <h1>Admin Panel</h1>
+    <p>PHP-Based Database CRUD Operations — CSC336 Assignment</p>
+  </div>
+
+  <div class="admin-page">
+
+    <!-- Header -->
+    <div class="admin-header-bar">
+      <h2>🗄️ Property Database Manager</h2>
+      <span class="admin-badge">PHP + MySQL Simulation</span>
+    </div>
+
+    <!-- Assignment Note -->
+    <div class="admin-php-note">
+      <div class="note-icon">📋</div>
+      <div>
+        <strong>CSC336 Assignment — Server-Side PHP CRUD Module</strong><br>
+        This module demonstrates PHP server-side database interaction concepts integrated into the StayNest project.
+        The actual PHP scripts (<code>db_connect.php</code>, <code>insert.php</code>, <code>display.php</code>, <code>update.php</code>, <code>delete.php</code>) are shown below as code blocks.
+        The interactive table below simulates the MySQL database operations using the same data fields from the semester project.
+      </div>
+    </div>
+
+    <!-- PHP Code: db_connect.php -->
+    <div class="php-block">
+      <div class="php-block-header">
+        <div class="php-dot r"></div><div class="php-dot y"></div><div class="php-dot g"></div>
+        <span class="php-block-title">db_connect.php — Database Connection</span>
+      </div>
+      <pre><span class="cmt">// db_connect.php — Establishes MySQL connection for StayNest</span>
+<span class="kw">&lt;?php</span>
+  <span class="var">$host</span>     = <span class="str">'localhost'</span>;
+  <span class="var">$dbname</span>   = <span class="str">'staynest_db'</span>;
+  <span class="var">$username</span> = <span class="str">'root'</span>;
+  <span class="var">$password</span> = <span class="str">''</span>;
+
+  <span class="kw">try</span> {
+    <span class="var">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="str">"mysql:host=<span class="var">$host</span>;dbname=<span class="var">$dbname</span>"</span>, <span class="var">$username</span>, <span class="var">$password</span>);
+    <span class="var">$pdo</span>-&gt;<span class="fn">setAttribute</span>(<span class="fn">PDO</span>::ATTR_ERRMODE, <span class="fn">PDO</span>::ERRMODE_EXCEPTION);
+  } <span class="kw">catch</span> (PDOException <span class="var">$e</span>) {
+    <span class="fn">die</span>(<span class="str">"Connection failed: "</span> . <span class="var">$e</span>-&gt;<span class="fn">getMessage</span>());
+  }
+
+<span class="cmt">  /* CREATE TABLE IF NOT EXISTS staynest_properties (
+       id          INT AUTO_INCREMENT PRIMARY KEY,
+       name        VARCHAR(150)   NOT NULL,
+       location    VARCHAR(150)   NOT NULL,
+       type        VARCHAR(50)    NOT NULL,
+       price       DECIMAL(10,2)  NOT NULL,
+       rating      DECIMAL(3,2)   NOT NULL,
+       amenities   VARCHAR(255),
+       created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+     ); */</span>
+<span class="kw">?&gt;</span></pre>
+    </div>
+
+    <!-- PHP Code: insert.php -->
+    <div class="php-block">
+      <div class="php-block-header">
+        <div class="php-dot r"></div><div class="php-dot y"></div><div class="php-dot g"></div>
+        <span class="php-block-title">insert.php — Insert Record (POST Handler)</span>
+      </div>
+      <pre><span class="kw">&lt;?php</span>
+<span class="fn">require_once</span> <span class="str">'db_connect.php'</span>;
+
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'POST'</span>) {
+
+  <span class="cmt">// Sanitize &amp; validate inputs</span>
+  <span class="var">$name</span>      = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="var">$_POST</span>[<span class="str">'name'</span>]));
+  <span class="var">$location</span>  = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="var">$_POST</span>[<span class="str">'location'</span>]));
+  <span class="var">$type</span>      = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="var">$_POST</span>[<span class="str">'type'</span>]));
+  <span class="var">$price</span>     = <span class="fn">floatval</span>(<span class="var">$_POST</span>[<span class="str">'price'</span>]);
+  <span class="var">$rating</span>    = <span class="fn">floatval</span>(<span class="var">$_POST</span>[<span class="str">'rating'</span>]);
+  <span class="var">$amenities</span> = <span class="fn">implode</span>(<span class="str">','</span>, <span class="var">$_POST</span>[<span class="str">'amenities'</span>] ?? []);
+
+  <span class="var">$errors</span> = [];
+  <span class="kw">if</span> (<span class="fn">empty</span>(<span class="var">$name</span>))               <span class="var">$errors</span>[] = <span class="str">"Property name is required."</span>;
+  <span class="kw">if</span> (<span class="fn">empty</span>(<span class="var">$location</span>))           <span class="var">$errors</span>[] = <span class="str">"Location is required."</span>;
+  <span class="kw">if</span> (<span class="var">$price</span> &lt;= <span class="num">0</span>)               <span class="var">$errors</span>[] = <span class="str">"Price must be greater than 0."</span>;
+  <span class="kw">if</span> (<span class="var">$rating</span> &lt; <span class="num">1</span> || <span class="var">$rating</span> &gt; <span class="num">5</span>) <span class="var">$errors</span>[] = <span class="str">"Rating must be between 1 and 5."</span>;
+
+  <span class="kw">if</span> (<span class="fn">empty</span>(<span class="var">$errors</span>)) {
+    <span class="var">$sql</span> = <span class="str">"INSERT INTO staynest_properties (name, location, type, price, rating, amenities)
+             VALUES (:name, :location, :type, :price, :rating, :amenities)"</span>;
+    <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(<span class="var">$sql</span>);
+    <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([
+      <span class="str">':name'</span>      =&gt; <span class="var">$name</span>,
+      <span class="str">':location'</span>  =&gt; <span class="var">$location</span>,
+      <span class="str">':type'</span>      =&gt; <span class="var">$type</span>,
+      <span class="str">':price'</span>     =&gt; <span class="var">$price</span>,
+      <span class="str">':rating'</span>    =&gt; <span class="var">$rating</span>,
+      <span class="str">':amenities'</span> =&gt; <span class="var">$amenities</span>
+    ]);
+    <span class="var">$_SESSION</span>[<span class="str">'msg'</span>] = <span class="str">"✅ Property inserted successfully! ID: "</span> . <span class="var">$pdo</span>-&gt;<span class="fn">lastInsertId</span>();
+  } <span class="kw">else</span> {
+    <span class="var">$_SESSION</span>[<span class="str">'error'</span>] = <span class="fn">implode</span>(<span class="str">"&lt;br&gt;"</span>, <span class="var">$errors</span>);
+  }
+  <span class="fn">header</span>(<span class="str">"Location: admin.php"</span>);
+  <span class="fn">exit</span>();
+}
+<span class="kw">?&gt;</span></pre>
+    </div>
+
+    <!-- PHP Code: update.php & delete.php side by side via grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;" class="php-two-col">
+      <div class="php-block" style="margin-bottom:0">
+        <div class="php-block-header">
+          <div class="php-dot r"></div><div class="php-dot y"></div><div class="php-dot g"></div>
+          <span class="php-block-title">update.php</span>
+        </div>
+        <pre style="font-size:12px"><span class="kw">&lt;?php</span>
+<span class="fn">require_once</span> <span class="str">'db_connect.php'</span>;
+<span class="kw">if</span>(<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>]===<span class="str">'POST'</span>){
+  <span class="var">$id</span>  = <span class="fn">intval</span>(<span class="var">$_POST</span>[<span class="str">'id'</span>]);
+  <span class="var">$name</span>  = <span class="fn">trim</span>(<span class="fn">htmlspecialchars</span>(<span class="var">$_POST</span>[<span class="str">'name'</span>]));
+  <span class="var">$price</span> = <span class="fn">floatval</span>(<span class="var">$_POST</span>[<span class="str">'price'</span>]);
+  <span class="var">$rating</span>= <span class="fn">floatval</span>(<span class="var">$_POST</span>[<span class="str">'rating'</span>]);
+
+  <span class="var">$sql</span>=<span class="str">"UPDATE staynest_properties
+    SET name=:n, price=:p, rating=:r
+    WHERE id=:id"</span>;
+  <span class="var">$stmt</span>=<span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(<span class="var">$sql</span>);
+  <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([
+    <span class="str">':n'</span>=&gt;<span class="var">$name</span>,
+    <span class="str">':p'</span>=&gt;<span class="var">$price</span>,
+    <span class="str">':r'</span>=&gt;<span class="var">$rating</span>,
+    <span class="str">':id'</span>=&gt;<span class="var">$id</span>
+  ]);
+  <span class="var">$_SESSION</span>[<span class="str">'msg'</span>]=<span class="str">"✅ Record updated."</span>;
+  <span class="fn">header</span>(<span class="str">"Location: admin.php"</span>);
+}
+<span class="kw">?&gt;</span></pre>
+      </div>
+      <div class="php-block" style="margin-bottom:0">
+        <div class="php-block-header">
+          <div class="php-dot r"></div><div class="php-dot y"></div><div class="php-dot g"></div>
+          <span class="php-block-title">delete.php</span>
+        </div>
+        <pre style="font-size:12px"><span class="kw">&lt;?php</span>
+<span class="fn">require_once</span> <span class="str">'db_connect.php'</span>;
+
+<span class="kw">if</span>(<span class="fn">isset</span>(<span class="var">$_GET</span>[<span class="str">'id'</span>])){
+  <span class="var">$id</span> = <span class="fn">intval</span>(<span class="var">$_GET</span>[<span class="str">'id'</span>]);
+
+  <span class="cmt">// Prevent accidental deletion
+  // of protected seed records</span>
+  <span class="kw">if</span>(<span class="var">$id</span> &lt;= <span class="num">0</span>){
+    <span class="fn">die</span>(<span class="str">"Invalid ID"</span>);
+  }
+
+  <span class="var">$sql</span> = <span class="str">"DELETE FROM
+    staynest_properties
+    WHERE id = :id"</span>;
+  <span class="var">$stmt</span> = <span class="var">$pdo</span>-&gt;<span class="fn">prepare</span>(<span class="var">$sql</span>);
+  <span class="var">$stmt</span>-&gt;<span class="fn">execute</span>([<span class="str">':id'</span>=&gt;<span class="var">$id</span>]);
+
+  <span class="var">$_SESSION</span>[<span class="str">'msg'</span>] =
+    <span class="str">"🗑️ Record #"</span>.<span class="var">$id</span>.<span class="str">" deleted."</span>;
+  <span class="fn">header</span>(<span class="str">"Location: admin.php"</span>);
+}
+<span class="kw">?&gt;</span></pre>
+      </div>
+    </div>
+
+    <!-- Live Stats -->
+    <div class="admin-stats" id="adminStats"></div>
+
+    <!-- Alert -->
+    <div class="admin-alert" id="adminAlert"></div>
+
+    <!-- INSERT / EDIT FORM -->
+    <div class="admin-card">
+      <h3 id="adminFormTitle">➕ Insert New Property Record</h3>
+      <input type="hidden" id="editId" value=""/>
+      <div class="admin-form-grid">
+        <div class="admin-form-group">
+          <label>Property Name *</label>
+          <input type="text" id="af_name" placeholder="e.g. Luxury Beach House"/>
+          <span class="err-tip" id="af_nameErr">Property name is required (min 3 chars).</span>
+        </div>
+        <div class="admin-form-group">
+          <label>Location *</label>
+          <input type="text" id="af_location" placeholder="e.g. Bali, Indonesia"/>
+          <span class="err-tip" id="af_locationErr">Location is required.</span>
+        </div>
+        <div class="admin-form-group">
+          <label>Property Type *</label>
+          <select id="af_type">
+            <option value="">Select type</option>
+            <option value="villa">Villa</option>
+            <option value="apartment">Apartment</option>
+            <option value="cabin">Cabin</option>
+            <option value="resort">Resort</option>
+            <option value="cottage">Cottage</option>
+          </select>
+          <span class="err-tip" id="af_typeErr">Please select a type.</span>
+        </div>
+        <div class="admin-form-group">
+          <label>Price per Night ($) *</label>
+          <input type="number" id="af_price" placeholder="e.g. 150" min="1"/>
+          <span class="err-tip" id="af_priceErr">Price must be greater than $0.</span>
+        </div>
+        <div class="admin-form-group">
+          <label>Rating (1.0 – 5.0) *</label>
+          <input type="number" id="af_rating" placeholder="e.g. 4.8" min="1" max="5" step="0.1"/>
+          <span class="err-tip" id="af_ratingErr">Rating must be between 1.0 and 5.0.</span>
+        </div>
+        <div class="admin-form-group">
+          <label>Region</label>
+          <select id="af_region">
+            <option value="usa">USA</option>
+            <option value="europe">Europe</option>
+            <option value="asia">Asia</option>
+            <option value="middle-east">Middle East</option>
+            <option value="africa">Africa</option>
+            <option value="oceania">Oceania</option>
+          </select>
+        </div>
+        <div class="admin-form-group full">
+          <label>Amenities (select all that apply)</label>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 0">
+            <label style="font-weight:400;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="af-amenity" value="pool" style="accent-color:var(--red)"/> 🏊 Pool</label>
+            <label style="font-weight:400;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="af-amenity" value="wifi" style="accent-color:var(--red)"/> 📶 WiFi</label>
+            <label style="font-weight:400;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="af-amenity" value="gym" style="accent-color:var(--red)"/> 🏋️ Gym</label>
+            <label style="font-weight:400;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="af-amenity" value="kitchen" style="accent-color:var(--red)"/> 🍳 Kitchen</label>
+            <label style="font-weight:400;display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" class="af-amenity" value="parking" style="accent-color:var(--red)"/> 🚗 Parking</label>
+          </div>
+        </div>
+      </div>
+      <div class="admin-btn-row">
+        <button class="admin-btn primary" id="adminSubmitBtn" onclick="adminSubmit()">💾 Insert Record</button>
+        <button class="admin-btn secondary" onclick="adminResetForm()">✕ Reset Form</button>
+      </div>
+    </div>
+
+    <!-- RECORDS TABLE -->
+    <div class="admin-card">
+      <h3>📋 All Property Records
+        <span style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:var(--gray);margin-left:auto">
+          Simulating: <code style="font-size:12px;background:var(--light-gray);padding:2px 8px;border-radius:6px">SELECT * FROM staynest_properties</code>
+        </span>
+      </h3>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>Property Name</th>
+              <th>Location</th>
+              <th>Type</th>
+              <th>Price/Night</th>
+              <th>Rating</th>
+              <th>Amenities</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+        <div class="admin-table-footer" id="adminTableFooter"></div>
+      </div>
+    </div>
+
+  </div><!-- end admin-page -->
+</div><!-- end page-admin -->
+
+<!-- ===== FOOTER (shared) ===== -->
+<div class="footer" id="mainFooter">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>StayNest</h4>
+      <p>Find unique homes and experiences around the world. Book with confidence.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a onclick="showPage('listings')">All Listings</a>
+      <a onclick="showPage('explore')">Destinations</a>
+      <a onclick="showPage('home')">Home</a>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <a onclick="showPage('contact')">Contact Us</a>
+      <a>Help Centre</a>
+      <a>Safety Info</a>
+      <a>Cancellation Policy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a>About Us</a>
+      <a>Careers</a>
+      <a>Press &amp; Media</a>
+      <a>Become a Host</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 StayNest — Web Technologies CSC336 | COMSATS University Islamabad, Attock Campus</p>
+    <div class="footer-social">
+      <a href="#">📘</a><a href="#">📷</a><a href="#">🐦</a><a href="#">💼</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  MODAL: LOGIN / REGISTER (TABBED)
+══════════════════════════════════════════════════ -->
+<div id="authModal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="authCloseBtn">&times;</button>
+    <h2 id="authModalTitle">Welcome to StayNest</h2>
+
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('login')">Login</button>
+      <button class="modal-tab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN TAB -->
+    <div class="tab-panel active" id="tab-login">
+      <button class="social-btn">🌐 Continue with Google</button>
+      <button class="social-btn">🍎 Continue with Apple</button>
+      <div class="divider"><span>or</span></div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="loginName" placeholder="e.g. Ali Hassan"/>
+        <span class="err-msg" id="nameErr">Name must be at least 3 letters.</span>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="you@email.com"/>
+        <span class="err-msg" id="emailErr">Enter a valid email.</span>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Minimum 6 characters"/>
+        <span class="err-msg" id="passErr">Password must be at least 6 characters.</span>
+      </div>
+      <div class="form-group">
+        <label>How are you feeling today?</label>
+        <select id="loginMood">
+          <option value="">Select your mood</option>
+          <option value="happy">😊 Happy</option>
+          <option value="tired">😴 Tired</option>
+          <option value="busy">💼 Busy</option>
+          <option value="excited">🤩 Excited</option>
+        </select>
+        <span class="err-msg" id="moodErr">Please select your mood.</span>
+      </div>
+      <button class="submit-btn" id="loginSubmitBtn">Login to StayNest</button>
+    </div>
+
+    <!-- REGISTER TAB -->
+    <div class="tab-panel" id="tab-register">
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="regFirst" placeholder="Ali"/>
+          <span class="err-msg" id="rFirstErr">Required.</span>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="regLast" placeholder="Hassan"/>
+          <span class="err-msg" id="rLastErr">Required.</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="regEmail" placeholder="you@email.com"/>
+        <span class="err-msg" id="rEmailErr">Enter a valid email.</span>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="regPhone" placeholder="+92 300 1234567"/>
+        <span class="err-msg" id="rPhoneErr">Enter a valid phone (min 10 digits).</span>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Minimum 8 characters"/>
+        <span class="err-msg" id="rPassErr">Password must be at least 8 characters.</span>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="regPassConfirm" placeholder="Repeat password"/>
+        <span class="err-msg" id="rPassConfirmErr">Passwords do not match.</span>
+      </div>
+      <div class="form-group">
+        <label>I am a…</label>
+        <select id="regRole">
+          <option value="">Select role</option>
+          <option value="guest">🧳 Guest (looking to book)</option>
+          <option value="host">🏠 Host (listing a property)</option>
+        </select>
+        <span class="err-msg" id="rRoleErr">Please select your role.</span>
+      </div>
+      <button class="submit-btn" id="registerSubmitBtn">Create Account 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  MODAL: BOOKING FORM
+══════════════════════════════════════════════════ -->
+<div id="bookModal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" id="bookCloseBtn">&times;</button>
+    <h2>Book Your Stay</h2>
+    <p id="bookingPropertyLabel" style="color:var(--gray);font-size:14px;margin-bottom:20px"></p>
+
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" id="bookName" placeholder="Your full name"/>
+      <span class="err-msg" id="bNameErr">Name must contain only letters.</span>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="bookEmail" placeholder="you@email.com"/>
+      <span class="err-msg" id="bEmailErr">Enter a valid email.</span>
+    </div>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" id="bookPhone" placeholder="e.g. +92 300 1234567"/>
+      <span class="err-msg" id="bPhoneErr">Enter a valid phone number (min 10 digits).</span>
+    </div>
+    <div class="form-group">
+      <label>Check-in Date</label>
+      <input type="date" id="bookCheckin"/>
+      <span class="err-msg" id="bCheckinErr">Check-in date is required.</span>
+    </div>
+    <div class="form-group">
+      <label>Check-out Date</label>
+      <input type="date" id="bookCheckout"/>
+      <span class="err-msg" id="bCheckoutErr">Check-out date must be after check-in.</span>
+    </div>
+    <div class="form-group">
+      <label>Number of Guests</label>
+      <select id="bookGuests">
+        <option value="">Select guests</option>
+        <option value="1">1 Guest</option>
+        <option value="2">2 Guests</option>
+        <option value="3">3 Guests</option>
+        <option value="4">4+ Guests</option>
+      </select>
+      <span class="err-msg" id="bGuestsErr">Please select number of guests.</span>
+    </div>
+    <div class="form-group">
+      <label>Special Requests (optional)</label>
+      <textarea id="bookRequests" placeholder="Any special requirements…" style="height:70px;resize:vertical"></textarea>
+    </div>
+    <button class="submit-btn" id="bookSubmitBtn">Confirm Booking ✅</button>
+  </div>
+</div>
+
+<!-- JQUERY UI DIALOG -->
+<div id="confirmDialog" title="">
+  <div class="dialog-icon" id="dialogIcon"></div>
+  <h3 id="dialogHeading"></h3>
+  <p id="dialogMsg"></p>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+  SCRIPTS
+══════════════════════════════════════════════════ -->
+<script>
+/* ───── DATA ───── */
+const LISTINGS = [
+  { id:1, name:"Luxury Beach House", location:"California, USA", region:"usa", type:"villa", price:120, rating:4.9, badge:"Best Seller", img:"https://images.unsplash.com/photo-1505691938895-1758d7feb511", amenities:["pool","wifi","parking"], dest:"Los Angeles" },
+  { id:2, name:"Modern City Apartment", location:"New York, USA", region:"usa", type:"apartment", price:150, rating:4.7, badge:"", img:"https://images.unsplash.com/photo-1449844908441-8829872d2607", amenities:["wifi","gym"], dest:"New York" },
+  { id:3, name:"Mountain Cabin", location:"Swiss Alps, Switzerland", region:"europe", type:"cabin", price:95, rating:4.8, badge:"Cozy Pick", img:"https://images.unsplash.com/photo-1493809842364-78817add7ffb", amenities:["wifi","kitchen","parking"], dest:"Zurich" },
+  { id:4, name:"Private Villa", location:"Bali, Indonesia", region:"asia", type:"villa", price:220, rating:4.95, badge:"Top Rated", img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750", amenities:["pool","wifi","kitchen"], dest:"Bali" },
+  { id:5, name:"Infinity Pool Resort", location:"Santorini, Greece", region:"europe", type:"resort", price:380, rating:4.9, badge:"Luxury", img:"https://images.unsplash.com/photo-1520250497591-112f2f40a3f4", amenities:["pool","wifi","gym","kitchen"], dest:"Santorini" },
+  { id:6, name:"Desert Safari Lodge", location:"Dubai, UAE", region:"middle-east", type:"resort", price:280, rating:4.6, badge:"Unique", img:"https://images.unsplash.com/photo-1596436889106-be35e843f974", amenities:["pool","wifi","gym","parking"], dest:"Dubai" },
+  { id:7, name:"English Countryside Cottage", location:"Cotswolds, UK", region:"europe", type:"cottage", price:110, rating:4.7, badge:"", img:"https://images.unsplash.com/photo-1544636331-e26879cd4d9b", amenities:["wifi","kitchen","parking"], dest:"London" },
+  { id:8, name:"Tropical Overwater Bungalow", location:"Maldives", region:"asia", type:"resort", price:450, rating:5.0, badge:"Premium", img:"https://images.unsplash.com/photo-1540202404-a2f29016b523", amenities:["pool","wifi","kitchen"], dest:"Maldives" },
+  { id:9, name:"Penthouse Suite", location:"Manhattan, USA", region:"usa", type:"apartment", price:550, rating:4.8, badge:"Exclusive", img:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688", amenities:["wifi","gym","parking"], dest:"New York" },
+  { id:10, name:"Lakeside Chalet", location:"Interlaken, Switzerland", region:"europe", type:"cabin", price:130, rating:4.6, badge:"", img:"https://images.unsplash.com/photo-1578645510447-e20b4311e3ce", amenities:["wifi","kitchen","parking"], dest:"Zurich" },
+  { id:11, name:"Moroccan Riad", location:"Marrakech, Morocco", region:"africa", type:"villa", price:85, rating:4.5, badge:"Cultural", img:"https://images.unsplash.com/photo-1539037116277-4db20889f2d4", amenities:["wifi","pool"], dest:"Marrakech" },
+  { id:12, name:"Sydney Harbour Apartment", location:"Sydney, Australia", region:"oceania", type:"apartment", price:200, rating:4.7, badge:"", img:"https://images.unsplash.com/photo-1523482580672-f109ba8cb9be", amenities:["wifi","gym","parking"], dest:"Sydney" },
+];
+
+const DESTINATIONS = [
+  { name:"Bali, Indonesia", region:"asia", type:"beach", img:"https://images.unsplash.com/photo-1537996194471-e657df975ab4", count:"47 properties" },
+  { name:"Santorini, Greece", region:"europe", type:"beach", img:"https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff", count:"23 properties" },
+  { name:"Swiss Alps", region:"europe", type:"mountain", img:"https://images.unsplash.com/photo-1531366936337-7c912a4589a7", count:"31 properties" },
+  { name:"New York City", region:"america", type:"city", img:"https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625", count:"120 properties" },
+  { name:"Maldives", region:"asia", type:"beach", img:"https://images.unsplash.com/photo-1573843981267-be1999ff37cd", count:"18 properties" },
+  { name:"Dubai, UAE", region:"middle-east", type:"city", img:"https://images.unsplash.com/photo-1512453979798-5ea266f8880c", count:"64 properties" },
+  { name:"Paris, France", region:"europe", type:"city", img:"https://images.unsplash.com/photo-1502602898657-3e91760cbb34", count:"88 properties" },
+  { name:"Cotswolds, UK", region:"europe", type:"countryside", img:"https://images.unsplash.com/photo-1490971900337-ce660d09ac12", count:"16 properties" },
+  { name:"Tokyo, Japan", region:"asia", type:"city", img:"https://images.unsplash.com/photo-1540959733332-eab4deabeeaf", count:"52 properties" },
+  { name:"Marrakech, Morocco", region:"africa", type:"city", img:"https://images.unsplash.com/photo-1532592039896-a13aaafc4790", count:"29 properties" },
+  { name:"Sydney, Australia", region:"oceania", type:"city", img:"https://images.unsplash.com/photo-1506374322094-6021fc3926f1", count:"41 properties" },
+  { name:"Canadian Rockies", region:"america", type:"mountain", img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4", count:"22 properties" },
+];
+
+let bookings = JSON.parse(sessionStorage.getItem('sn_bookings') || '[]');
+let wishlist = JSON.parse(sessionStorage.getItem('sn_wishlist') || '[]');
+let currentBookingProp = null;
+
+/* ───── UTILITIES ───── */
+function showToast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => { t.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+function isValidPhone(v) { return v.replace(/\D/g,'').length >= 10; }
+
+function markValid($i,$e) { $i.removeClass('invalid').addClass('valid'); $e.fadeOut(200); }
+function markInvalid($i,$e) { $i.removeClass('valid').addClass('invalid'); $e.fadeIn(200); }
+function markClear($i,$e) { $i.removeClass('valid invalid'); $e.hide(); }
+
+/* ───── PAGE ROUTING ───── */
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(page==='bookings') renderBookings();
+  if(page==='listings') applyFilters();
+  if(page==='explore') filterDestinations();
+  if(page==='admin') renderAdminTable();
+}
+
+/* ───── CAROUSEL ───── */
+$(function(){
+  const track = document.getElementById('carouselTrack');
+  const slides = track.querySelectorAll('.carousel-slide');
+  const dotsWrap = document.getElementById('carouselDots');
+  let cur = 0, timer = null;
+  const INT = 3500;
+
+  slides.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0?' active':'');
+    d.addEventListener('click', ()=>goTo(i));
+    dotsWrap.appendChild(d);
+  });
+
+  function goTo(i) {
+    if(i>=slides.length) i=0;
+    if(i<0) i=slides.length-1;
+    cur = i;
+    track.style.transform = `translateX(-${cur*100}%)`;
+    dotsWrap.querySelectorAll('.dot').forEach((d,j) => d.classList.toggle('active',j===cur));
+  }
+
+  document.getElementById('nextBtn').addEventListener('click',()=>{ goTo(cur+1); reset(); });
+  document.getElementById('prevBtn').addEventListener('click',()=>{ goTo(cur-1); reset(); });
+
+  function play() { if(timer)return; timer=setInterval(()=>goTo(cur+1),INT); $('#playBtn').css('opacity','.5'); $('#pauseBtn').css('opacity','1'); }
+  function pause() { clearInterval(timer); timer=null; $('#playBtn').css('opacity','1'); $('#pauseBtn').css('opacity','.5'); }
+  function reset() { if(timer){pause();play();} }
+
+  $('#playBtn').on('click',play);
+  $('#pauseBtn').on('click',pause);
+  play();
+});
+
+/* ───── RENDER CARD ───── */
+function renderCard(l, compact=false) {
+  const isFav = wishlist.includes(l.id);
+  return `
+  <div class="card" id="card-${l.id}">
+    <div class="card-img-wrap">
+      <img src="${l.img}?w=400&q=80" alt="${l.name}" loading="lazy"/>
+      ${l.badge ? `<span class="card-badge">${l.badge}</span>` : ''}
+      <button class="fav-btn ${isFav?'active':''}" onclick="toggleWishlist(${l.id})" title="Save to wishlist">
+        ${isFav ? '❤️' : '🤍'}
+      </button>
+    </div>
+    <div class="card-body">
+      <h3>${l.name}</h3>
+      <div class="card-meta">
+        <span class="location">📍 ${l.location}</span>
+        <span class="rating">★ ${l.rating}</span>
+      </div>
+      <p class="price">$${l.price} <small style="font-weight:400;color:var(--gray)">/night</small></p>
+      <div class="card-actions">
+        <button onclick="openBookModal('${l.name}','$${l.price}/night',${l.id})">Book Now</button>
+        <button class="outline-btn" onclick="showToast('Viewing ${l.name} details','info')">Details</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ───── HOME LISTINGS ───── */
+function renderHomeListings() {
+  const featured = LISTINGS.slice(0,4);
+  document.getElementById('home-listings').innerHTML = featured.map(l => renderCard(l)).join('');
+}
+
+/* ───── WISHLIST ───── */
+function toggleWishlist(id) {
+  const idx = wishlist.indexOf(id);
+  if(idx === -1) {
+    wishlist.push(id);
+    showToast('Added to wishlist ❤️','success');
+  } else {
+    wishlist.splice(idx,1);
+    showToast('Removed from wishlist','info');
+  }
+  sessionStorage.setItem('sn_wishlist', JSON.stringify(wishlist));
+  updateWishlistCount();
+  // refresh fav buttons wherever visible
+  document.querySelectorAll(`[id^="card-"]`).forEach(c => {
+    const cid = parseInt(c.id.split('-')[1]);
+    const btn = c.querySelector('.fav-btn');
+    if(btn) { btn.textContent = wishlist.includes(cid)?'❤️':'🤍'; btn.classList.toggle('active', wishlist.includes(cid)); }
+  });
+}
+function updateWishlistCount() {
+  const el = document.getElementById('wishlistCount');
+  el.textContent = wishlist.length;
+  el.style.display = wishlist.length > 0 ? 'flex' : 'none';
+}
+
+/* ───── SEARCH ───── */
+function handleHeroSearch() {
+  const q = document.getElementById('heroSearch').value.trim();
+  if(!q) { showToast('Please enter a destination','error'); return; }
+  document.getElementById('exploreSearch').value = q;
+  showPage('explore');
+  filterDestinations();
+}
+function handleNavSearch() {
+  const q = document.getElementById('navSearchInput').value.trim();
+  if(!q) { showToast('Please enter a search term','error'); return; }
+  document.getElementById('exploreSearch').value = q;
+  showPage('explore');
+  filterDestinations();
+}
+
+/* ───── EXPLORE ───── */
+function filterDestinations() {
+  const region = document.getElementById('exploreRegion').value;
+  const type = document.getElementById('exploreType').value;
+  const q = document.getElementById('exploreSearch').value.toLowerCase().trim();
+
+  let results = DESTINATIONS.filter(d => {
+    if(region && d.region !== region) return false;
+    if(type && d.type !== type) return false;
+    if(q && !d.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  document.getElementById('destResultsCount').innerHTML =
+    `Showing <span>${results.length}</span> destination${results.length!==1?'s':''}`;
+
+  document.getElementById('destinationsGrid').innerHTML = results.length
+    ? results.map(d => `
+      <div class="dest-card" onclick="searchByDest('${d.name}')">
+        <img src="${d.img}?w=300&q=70" alt="${d.name}" loading="lazy"/>
+        <div class="dest-card-body">
+          <h4>${d.name}</h4>
+          <p>${d.type.charAt(0).toUpperCase()+d.type.slice(1)} destination</p>
+          <div class="dest-count">🏠 ${d.count}</div>
+        </div>
+      </div>`).join('')
+    : '<div style="text-align:center;padding:60px;color:var(--gray);width:100%">No destinations found. Try a different search.</div>';
+}
+function clearExploreFilters() {
+  document.getElementById('exploreRegion').value = '';
+  document.getElementById('exploreType').value = '';
+  document.getElementById('exploreSearch').value = '';
+  filterDestinations();
+}
+function searchByDest(name) {
+  const q = name.split(',')[0].toLowerCase();
+  document.getElementById('navSearchInput').value = '';
+  showPage('listings');
+  // filter listings by dest name
+  setTimeout(() => {
+    const filtered = LISTINGS.filter(l => l.dest.toLowerCase().includes(q) || l.location.toLowerCase().includes(q));
+    renderListingsGrid(filtered);
+    document.getElementById('listingsTitle').textContent = `Stays in ${name.split(',')[0]}`;
+  }, 50);
+}
+
+/* ───── LISTINGS ───── */
+function applyFilters() {
+  const loc = document.getElementById('filterLocation').value;
+  const type = document.getElementById('filterType').value;
+  const minP = parseFloat(document.getElementById('priceMin').value) || 0;
+  const maxP = parseFloat(document.getElementById('priceMax').value) || Infinity;
+  const minR = parseFloat(document.getElementById('filterRating').value) || 0;
+  const amenities = [...document.querySelectorAll('.amenity-check:checked')].map(c=>c.value);
+  const sort = document.getElementById('sortSelect').value;
+
+  let results = LISTINGS.filter(l => {
+    if(loc && l.region !== loc) return false;
+    if(type && l.type !== type) return false;
+    if(l.price < minP || l.price > maxP) return false;
+    if(l.rating < minR) return false;
+    if(amenities.length && !amenities.every(a => l.amenities.includes(a))) return false;
+    return true;
+  });
+
+  if(sort==='price-asc') results.sort((a,b)=>a.price-b.price);
+  else if(sort==='price-desc') results.sort((a,b)=>b.price-a.price);
+  else if(sort==='rating') results.sort((a,b)=>b.rating-a.rating);
+  else if(sort==='name') results.sort((a,b)=>a.name.localeCompare(b.name));
+
+  document.getElementById('listingsTitle').textContent = `${results.length} Propert${results.length!==1?'ies':'y'} Found`;
+  renderListingsGrid(results);
+}
+function renderListingsGrid(data) {
+  const g = document.getElementById('listingsGrid');
+  if(!data.length) {
+    g.innerHTML = `<div class="no-results" style="grid-column:1/-1"><div class="nr-icon">🏚️</div><h3>No properties found</h3><p>Try adjusting your filters</p></div>`;
+    return;
+  }
+  g.innerHTML = data.map(l => renderCard(l)).join('');
+}
+function clearFilters() {
+  document.getElementById('filterLocation').value = '';
+  document.getElementById('filterType').value = '';
+  document.getElementById('priceMin').value = '';
+  document.getElementById('priceMax').value = '';
+  document.getElementById('filterRating').value = '';
+  document.querySelectorAll('.amenity-check').forEach(c => c.checked = false);
+  document.getElementById('sortSelect').value = 'default';
+  applyFilters();
+}
+
+/* ───── BOOKINGS ───── */
+function renderBookings() {
+  const list = document.getElementById('bookingsList');
+  if(!bookings.length) {
+    list.innerHTML = `
+      <div class="empty-bookings">
+        <div class="eb-icon">🧳</div>
+        <h3>No bookings yet!</h3>
+        <p>You haven't made any reservations. Start exploring amazing stays.</p>
+        <button class="go-listings-btn" onclick="showPage('listings')">Browse Listings</button>
+      </div>`;
+    return;
+  }
+  list.innerHTML = bookings.map((b,i) => `
+    <div class="booking-card" id="bcard-${i}">
+      <div class="booking-card-icon">🏠</div>
+      <div class="booking-info">
+        <h3>${b.property}</h3>
+        <div class="booking-details">
+          <div class="booking-detail"><div class="bd-label">Guest</div><div class="bd-val">${b.name}</div></div>
+          <div class="booking-detail"><div class="bd-label">Check-in</div><div class="bd-val">${b.checkin}</div></div>
+          <div class="booking-detail"><div class="bd-label">Check-out</div><div class="bd-val">${b.checkout}</div></div>
+          <div class="booking-detail"><div class="bd-label">Guests</div><div class="bd-val">${b.guests}</div></div>
+          <div class="booking-detail"><div class="bd-label">Price</div><div class="bd-val">${b.price}</div></div>
+          <div class="booking-detail"><div class="bd-label">Booked On</div><div class="bd-val">${b.date}</div></div>
+        </div>
+        <span class="booking-status ${b.status==='Confirmed'?'status-confirmed':'status-cancelled'}">
+          ${b.status==='Confirmed'?'✅':'❌'} ${b.status}
+        </span>
+        ${b.status==='Confirmed'?`<br><button class="booking-cancel-btn" onclick="cancelBooking(${i})">Cancel Booking</button>`:''}
+      </div>
+    </div>`).join('');
+}
+function cancelBooking(i) {
+  bookings[i].status = 'Cancelled';
+  sessionStorage.setItem('sn_bookings', JSON.stringify(bookings));
+  showToast('Booking cancelled','error');
+  renderBookings();
+}
+function clearAllBookings() {
+  if(!bookings.length) { showToast('No bookings to clear','info'); return; }
+  bookings = [];
+  sessionStorage.setItem('sn_bookings', JSON.stringify(bookings));
+  showToast('All bookings cleared','info');
+  renderBookings();
+}
+
+/* ───── AUTH MODAL ───── */
+$('#loginNavBtn, #registerNavBtn').on('click', function(){
+  const tab = $(this).attr('id')==='registerNavBtn' ? 'register' : 'login';
+  switchTab(tab);
+  $('#authModal').css('display','flex');
+});
+$('#authCloseBtn').on('click', ()=>$('#authModal').hide());
+$('#authModal').on('click', function(e){ if($(e.target).is('#authModal')) $(this).hide(); });
+
+function switchTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+}
+
+// Login live validation
+$('#loginName').on('input',function(){ /^[A-Za-z\s]{3,}$/.test($(this).val().trim())?markValid($(this),$('#nameErr')):markInvalid($(this),$('#nameErr')); });
+$('#loginEmail').on('input',function(){ isValidEmail($(this).val().trim())?markValid($(this),$('#emailErr')):markInvalid($(this),$('#emailErr')); });
+$('#loginPassword').on('input',function(){ $(this).val().length>=6?markValid($(this),$('#passErr')):markInvalid($(this),$('#passErr')); });
+$('#loginMood').on('change',function(){ $(this).val()?markValid($(this),$('#moodErr')):markInvalid($(this),$('#moodErr')); });
+
+// Login submit
+$('#loginSubmitBtn').on('click',function(){
+  let v=true;
+  if(!/^[A-Za-z\s]{3,}$/.test($('#loginName').val().trim())){ markInvalid($('#loginName'),$('#nameErr')); v=false; } else markValid($('#loginName'),$('#nameErr'));
+  if(!isValidEmail($('#loginEmail').val().trim())){ markInvalid($('#loginEmail'),$('#emailErr')); v=false; } else markValid($('#loginEmail'),$('#emailErr'));
+  if($('#loginPassword').val().length<6){ markInvalid($('#loginPassword'),$('#passErr')); v=false; } else markValid($('#loginPassword'),$('#passErr'));
+  if(!$('#loginMood').val()){ markInvalid($('#loginMood'),$('#moodErr')); v=false; } else markValid($('#loginMood'),$('#moodErr'));
+  if(!v) return;
+
+  const h=new Date().getHours();
+  const gr=h<12?'🌅 Good Morning':h<17?'☀️ Good Afternoon':h<20?'🌆 Good Evening':'🌙 Good Night';
+  const moodMap={happy:{emoji:'😊',text:'Glad you\'re feeling happy! Enjoy exploring.'},tired:{emoji:'😴',text:'Hope a cozy getaway recharges you!'},busy:{emoji:'💼',text:'Great stays await you soon!'},excited:{emoji:'🤩',text:'Your excitement is contagious!'}};
+  const mood=moodMap[$('#loginMood').val()];
+  const name=$('#loginName').val().trim();
+  $('#authModal').hide();
+  showConfirmDialog(mood.emoji,'Welcome, '+name+'!',gr+', '+name+'!','You have successfully logged in.<br><br>'+mood.text);
+});
+
+// Register live validation
+$('#regFirst').on('input',function(){ $(this).val().trim().length>=2?markValid($(this),$('#rFirstErr')):markInvalid($(this),$('#rFirstErr')); });
+$('#regLast').on('input',function(){ $(this).val().trim().length>=2?markValid($(this),$('#rLastErr')):markInvalid($(this),$('#rLastErr')); });
+$('#regEmail').on('input',function(){ isValidEmail($(this).val().trim())?markValid($(this),$('#rEmailErr')):markInvalid($(this),$('#rEmailErr')); });
+$('#regPhone').on('input',function(){ isValidPhone($(this).val())?markValid($(this),$('#rPhoneErr')):markInvalid($(this),$('#rPhoneErr')); });
+$('#regPass').on('input',function(){ $(this).val().length>=8?markValid($(this),$('#rPassErr')):markInvalid($(this),$('#rPassErr')); });
+$('#regPassConfirm').on('input',function(){ $(this).val()===$('#regPass').val()&&$(this).val().length>0?markValid($(this),$('#rPassConfirmErr')):markInvalid($(this),$('#rPassConfirmErr')); });
+$('#regRole').on('change',function(){ $(this).val()?markValid($(this),$('#rRoleErr')):markInvalid($(this),$('#rRoleErr')); });
+
+// Register submit
+$('#registerSubmitBtn').on('click',function(){
+  let v=true;
+  if($('#regFirst').val().trim().length<2){ markInvalid($('#regFirst'),$('#rFirstErr')); v=false; } else markValid($('#regFirst'),$('#rFirstErr'));
+  if($('#regLast').val().trim().length<2){ markInvalid($('#regLast'),$('#rLastErr')); v=false; } else markValid($('#regLast'),$('#rLastErr'));
+  if(!isValidEmail($('#regEmail').val().trim())){ markInvalid($('#regEmail'),$('#rEmailErr')); v=false; } else markValid($('#regEmail'),$('#rEmailErr'));
+  if(!isValidPhone($('#regPhone').val())){ markInvalid($('#regPhone'),$('#rPhoneErr')); v=false; } else markValid($('#regPhone'),$('#rPhoneErr'));
+  if($('#regPass').val().length<8){ markInvalid($('#regPass'),$('#rPassErr')); v=false; } else markValid($('#regPass'),$('#rPassErr'));
+  if($('#regPassConfirm').val()!==$('#regPass').val()){ markInvalid($('#regPassConfirm'),$('#rPassConfirmErr')); v=false; } else markValid($('#regPassConfirm'),$('#rPassConfirmErr'));
+  if(!$('#regRole').val()){ markInvalid($('#regRole'),$('#rRoleErr')); v=false; } else markValid($('#regRole'),$('#rRoleErr'));
+  if(!v) return;
+  const name=$('#regFirst').val().trim()+' '+$('#regLast').val().trim();
+  $('#authModal').hide();
+  showConfirmDialog('🎉','Account Created!','Welcome aboard, '+name+'!','Your account has been created successfully.<br>You can now start booking amazing stays!');
+});
+
+/* ───── BOOKING MODAL ───── */
+window.openBookModal = function(property, price, id) {
+  currentBookingProp = {property, price, id};
+  $('#bookingPropertyLabel').text('📌 '+property+' — '+price);
+  $('#bookModal').css('display','flex');
+  const today = new Date().toISOString().split('T')[0];
+  $('#bookCheckin, #bookCheckout').attr('min', today);
+};
+
+function closeBookModal() {
+  $('#bookModal').hide();
+  $('#bookName,#bookEmail,#bookPhone,#bookCheckin,#bookCheckout,#bookGuests,#bookRequests').each(function(){
+    markClear($(this),$(this).next('.err-msg')); $(this).val('');
+  });
+}
+
+$('#bookCloseBtn').on('click',closeBookModal);
+$('#bookModal').on('click',function(e){ if($(e.target).is('#bookModal')) closeBookModal(); });
+
+$('#bookName').on('input',function(){ /^[A-Za-z\s]{3,}$/.test($(this).val().trim())?markValid($(this),$('#bNameErr')):markInvalid($(this),$('#bNameErr')); });
+$('#bookEmail').on('input',function(){ isValidEmail($(this).val().trim())?markValid($(this),$('#bEmailErr')):markInvalid($(this),$('#bEmailErr')); });
+$('#bookPhone').on('input',function(){ isValidPhone($(this).val())?markValid($(this),$('#bPhoneErr')):markInvalid($(this),$('#bPhoneErr')); });
+$('#bookCheckin').on('change',function(){ if($(this).val()){ markValid($(this),$('#bCheckinErr')); $('#bookCheckout').attr('min',$(this).val()); } else markInvalid($(this),$('#bCheckinErr')); });
+$('#bookCheckout').on('change',function(){ const ci=$('#bookCheckin').val(),co=$(this).val(); co&&ci&&co>ci?markValid($(this),$('#bCheckoutErr')):markInvalid($(this),$('#bCheckoutErr')); });
+$('#bookGuests').on('change',function(){ $(this).val()?markValid($(this),$('#bGuestsErr')):markInvalid($(this),$('#bGuestsErr')); });
+
+$('#bookSubmitBtn').on('click',function(){
+  let v=true;
+  const ci=$('#bookCheckin').val(), co=$('#bookCheckout').val();
+  if(!/^[A-Za-z\s]{3,}$/.test($('#bookName').val().trim())){ markInvalid($('#bookName'),$('#bNameErr')); v=false; } else markValid($('#bookName'),$('#bNameErr'));
+  if(!isValidEmail($('#bookEmail').val().trim())){ markInvalid($('#bookEmail'),$('#bEmailErr')); v=false; } else markValid($('#bookEmail'),$('#bEmailErr'));
+  if(!isValidPhone($('#bookPhone').val())){ markInvalid($('#bookPhone'),$('#bPhoneErr')); v=false; } else markValid($('#bookPhone'),$('#bPhoneErr'));
+  if(!ci){ markInvalid($('#bookCheckin'),$('#bCheckinErr')); v=false; } else markValid($('#bookCheckin'),$('#bCheckinErr'));
+  if(!co||co<=ci){ markInvalid($('#bookCheckout'),$('#bCheckoutErr')); v=false; } else markValid($('#bookCheckout'),$('#bCheckoutErr'));
+  if(!$('#bookGuests').val()){ markInvalid($('#bookGuests'),$('#bGuestsErr')); v=false; } else markValid($('#bookGuests'),$('#bGuestsErr'));
+  if(!v) return;
+
+  const b = {
+    property: currentBookingProp.property,
+    price: currentBookingProp.price,
+    name: $('#bookName').val().trim(),
+    email: $('#bookEmail').val().trim(),
+    checkin: ci,
+    checkout: co,
+    guests: $('#bookGuests').val()+' guest(s)',
+    date: new Date().toLocaleDateString(),
+    status: 'Confirmed'
+  };
+  bookings.unshift(b);
+  sessionStorage.setItem('sn_bookings', JSON.stringify(bookings));
+  closeBookModal();
+  showConfirmDialog('🏠','Booking Confirmed ✈','You\'re all set!','Your booking for <strong>'+b.property+'</strong> is confirmed!<br>Check-in: '+ci+' | Check-out: '+co+'<br><br>View it in <em>My Bookings</em>.');
+  showToast('Booking confirmed! 🎉','success');
+});
+
+/* ───── CONTACT FORM ───── */
+$('#cName').on('input',function(){ $(this).val().trim().length>=2?markValid($(this),$('#cNameErr')):markInvalid($(this),$('#cNameErr')); });
+$('#cLast').on('input',function(){ $(this).val().trim().length>=2?markValid($(this),$('#cLastErr')):markInvalid($(this),$('#cLastErr')); });
+$('#cEmail').on('input',function(){ isValidEmail($(this).val().trim())?markValid($(this),$('#cEmailErr')):markInvalid($(this),$('#cEmailErr')); });
+$('#cSubject').on('change',function(){ $(this).val()?markValid($(this),$('#cSubjectErr')):markInvalid($(this),$('#cSubjectErr')); });
+$('#cMessage').on('input',function(){ $(this).val().trim().length>=20?markValid($(this),$('#cMsgErr')):markInvalid($(this),$('#cMsgErr')); });
+
+$('#contactSubmitBtn').on('click',function(){
+  let v=true;
+  if($('#cName').val().trim().length<2){ markInvalid($('#cName'),$('#cNameErr')); v=false; } else markValid($('#cName'),$('#cNameErr'));
+  if($('#cLast').val().trim().length<2){ markInvalid($('#cLast'),$('#cLastErr')); v=false; } else markValid($('#cLast'),$('#cLastErr'));
+  if(!isValidEmail($('#cEmail').val().trim())){ markInvalid($('#cEmail'),$('#cEmailErr')); v=false; } else markValid($('#cEmail'),$('#cEmailErr'));
+  if(!$('#cSubject').val()){ markInvalid($('#cSubject'),$('#cSubjectErr')); v=false; } else markValid($('#cSubject'),$('#cSubjectErr'));
+  if($('#cMessage').val().trim().length<20){ markInvalid($('#cMessage'),$('#cMsgErr')); v=false; } else markValid($('#cMessage'),$('#cMsgErr'));
+  if(!v) return;
+  showConfirmDialog('✉️','Message Sent!','Thank you for reaching out!','We received your message and will get back to you within 24 hours.');
+  showToast('Message sent successfully!','success');
+  ['#cName','#cLast','#cEmail','#cSubject','#cMessage'].forEach(s => { $(s).val(''); markClear($(s),$(s).next('.err-msg')); });
+});
+
+/* ───── NEWSLETTER ───── */
+function subscribeNewsletter() {
+  const e = document.getElementById('newsletterEmail').value.trim();
+  if(!isValidEmail(e)) { showToast('Please enter a valid email','error'); return; }
+  showToast('Subscribed! 🎉 Check your inbox.','success');
+  document.getElementById('newsletterEmail').value = '';
+}
+
+/* ───── JQUERY UI DIALOG ───── */
+$('#confirmDialog').dialog({
+  autoOpen:false, modal:true, draggable:true, resizable:true, width:420, minHeight:200,
+  show:{effect:'bounce',duration:600}, hide:{effect:'fade',duration:400},
+  buttons:{'OK ✓':function(){ $(this).dialog('close'); }}
+});
+
+function showConfirmDialog(icon, title, heading, msg) {
+  $('#dialogIcon').text(icon);
+  $('#dialogHeading').text(heading);
+  $('#dialogMsg').html(msg);
+  $('#confirmDialog').dialog('option','title',title);
+  $('#confirmDialog').dialog('open');
+}
+
+/* ───── INIT ───── */
+renderHomeListings();
+updateWishlistCount();
+applyFilters();
+filterDestinations();
+
+/* ═══════════════════════════════════════
+   ADMIN PANEL — PHP CRUD Simulation
+   Mirrors PHP/MySQL server-side logic
+═══════════════════════════════════════ */
+
+// Local DB = sessionStorage, seeded from LISTINGS on first load
+let adminDB = JSON.parse(sessionStorage.getItem('sn_adminDB') || 'null');
+if (!adminDB) {
+  adminDB = LISTINGS.map(l => ({
+    id: l.id,
+    name: l.name,
+    location: l.location,
+    type: l.type,
+    price: l.price,
+    rating: l.rating,
+    region: l.region,
+    amenities: l.amenities
+  }));
+  sessionStorage.setItem('sn_adminDB', JSON.stringify(adminDB));
+}
+let adminNextId = Math.max(...adminDB.map(r=>r.id)) + 1;
+
+function saveAdminDB() {
+  sessionStorage.setItem('sn_adminDB', JSON.stringify(adminDB));
+}
+
+function showAdminAlert(msg, type='success') {
+  const el = document.getElementById('adminAlert');
+  el.className = `admin-alert ${type}`;
+  el.innerHTML = (type==='success'?'✅ ': type==='error'?'❌ ':'ℹ️ ') + msg;
+  el.style.display = 'flex';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+function renderAdminStats() {
+  const total = adminDB.length;
+  const avgPrice = total ? (adminDB.reduce((s,r)=>s+r.price,0)/total).toFixed(0) : 0;
+  const avgRating = total ? (adminDB.reduce((s,r)=>s+r.rating,0)/total).toFixed(2) : 0;
+  const types = [...new Set(adminDB.map(r=>r.type))].length;
+  document.getElementById('adminStats').innerHTML = `
+    <div class="admin-stat-card"><div class="as-num">${total}</div><div class="as-lbl">Total Records</div></div>
+    <div class="admin-stat-card"><div class="as-num">$${avgPrice}</div><div class="as-lbl">Avg Price/Night</div></div>
+    <div class="admin-stat-card"><div class="as-num">${avgRating}★</div><div class="as-lbl">Avg Rating</div></div>
+    <div class="admin-stat-card"><div class="as-num">${types}</div><div class="as-lbl">Property Types</div></div>`;
+}
+
+function renderAdminTable() {
+  renderAdminStats();
+  const tbody = document.getElementById('adminTableBody');
+  if (!adminDB.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--gray)">No records found in database.</td></tr>`;
+    document.getElementById('adminTableFooter').textContent = '0 records';
+    return;
+  }
+  tbody.innerHTML = adminDB.map(r => `
+    <tr id="arow-${r.id}">
+      <td><strong>#${r.id}</strong></td>
+      <td>${r.name}</td>
+      <td>📍 ${r.location}</td>
+      <td><span class="tbl-badge ${r.type}">${r.type.charAt(0).toUpperCase()+r.type.slice(1)}</span></td>
+      <td><strong>$${r.price}</strong>/night</td>
+      <td>★ ${r.rating}</td>
+      <td style="font-size:12px">${(r.amenities||[]).join(', ')||'—'}</td>
+      <td>
+        <div class="td-actions">
+          <button class="tbl-btn edit" onclick="adminEdit(${r.id})">✏️ Edit</button>
+          <button class="tbl-btn delete" onclick="adminDelete(${r.id})">🗑️ Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+  document.getElementById('adminTableFooter').innerHTML =
+    `Showing <strong>${adminDB.length}</strong> record(s) — Simulating: <code style="font-family:monospace;font-size:12px">mysqli_num_rows($result) = ${adminDB.length}</code>`;
+}
+
+function adminSubmit() {
+  const name     = document.getElementById('af_name').value.trim();
+  const location = document.getElementById('af_location').value.trim();
+  const type     = document.getElementById('af_type').value;
+  const price    = parseFloat(document.getElementById('af_price').value);
+  const rating   = parseFloat(document.getElementById('af_rating').value);
+  const region   = document.getElementById('af_region').value;
+  const amenities= [...document.querySelectorAll('.af-amenity:checked')].map(c=>c.value);
+  const editId   = document.getElementById('editId').value;
+
+  // Validation — mirrors PHP server-side checks
+  let valid = true;
+  function afCheck(id, errId, cond) {
+    const el = document.getElementById(id);
+    const er = document.getElementById(errId);
+    if (cond) { el.classList.remove('err'); er.style.display='none'; }
+    else { el.classList.add('err'); er.style.display='block'; valid=false; }
+  }
+  afCheck('af_name','af_nameErr', name.length >= 3);
+  afCheck('af_location','af_locationErr', location.length >= 2);
+  afCheck('af_type','af_typeErr', type !== '');
+  afCheck('af_price','af_priceErr', !isNaN(price) && price > 0);
+  afCheck('af_rating','af_ratingErr', !isNaN(rating) && rating >= 1 && rating <= 5);
+  if (!valid) { showAdminAlert('Please fix the validation errors before submitting.','error'); return; }
+
+  if (editId) {
+    // UPDATE — mirrors PHP UPDATE query
+    const idx = adminDB.findIndex(r => r.id === parseInt(editId));
+    if (idx > -1) {
+      adminDB[idx] = { ...adminDB[idx], name, location, type, price, rating, region, amenities };
+      saveAdminDB();
+      showAdminAlert(`Record #${editId} updated successfully! (PHP: UPDATE staynest_properties SET ... WHERE id=${editId})`,'success');
+      showToast('Record updated ✅','success');
+    }
+    adminResetForm();
+  } else {
+    // INSERT — mirrors PHP INSERT query
+    const newRec = { id: adminNextId++, name, location, type, price, rating, region, amenities };
+    adminDB.unshift(newRec);
+    saveAdminDB();
+    showAdminAlert(`Record inserted! New ID: #${newRec.id} (PHP: INSERT INTO staynest_properties ... lastInsertId() = ${newRec.id})`,'success');
+    showToast(`Property #${newRec.id} inserted 💾`,'success');
+    adminResetForm();
+  }
+  renderAdminTable();
+}
+
+function adminEdit(id) {
+  const r = adminDB.find(rec => rec.id === id);
+  if (!r) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('af_name').value = r.name;
+  document.getElementById('af_location').value = r.location;
+  document.getElementById('af_type').value = r.type;
+  document.getElementById('af_price').value = r.price;
+  document.getElementById('af_rating').value = r.rating;
+  document.getElementById('af_region').value = r.region || 'usa';
+  document.querySelectorAll('.af-amenity').forEach(c => { c.checked = (r.amenities||[]).includes(c.value); });
+  document.getElementById('adminFormTitle').textContent = `✏️ Edit Record #${id} — ${r.name}`;
+  document.getElementById('adminSubmitBtn').textContent = '💾 Update Record';
+  document.getElementById('arow-'+id)?.classList.add('editing');
+  document.querySelector('.admin-card').scrollIntoView({behavior:'smooth', block:'start'});
+  showAdminAlert(`Editing record #${id}. Modify fields and click Update Record. (PHP: SELECT * FROM staynest_properties WHERE id=${id})`,'info');
+}
+
+function adminDelete(id) {
+  const r = adminDB.find(rec => rec.id === id);
+  if (!r) return;
+  $('#dialogIcon').text('🗑️');
+  $('#dialogHeading').text('Delete Record #'+id+'?');
+  $('#dialogMsg').html(`Are you sure you want to delete <strong>${r.name}</strong>?<br><br><code style="font-size:12px;background:#f4f4f4;padding:4px 10px;border-radius:6px">DELETE FROM staynest_properties WHERE id = ${id}</code>`);
+  $('#confirmDialog').dialog('option','title','Confirm Delete');
+  $('#confirmDialog').dialog('option','buttons',{
+    'Delete 🗑️': function() {
+      adminDB = adminDB.filter(rec => rec.id !== id);
+      saveAdminDB();
+      $(this).dialog('close');
+      renderAdminTable();
+      showAdminAlert(`Record #${id} (${r.name}) deleted. (PHP: $stmt->execute() — rows affected: 1)`,'error');
+      showToast(`Record #${id} deleted`,'error');
+    },
+    'Cancel': function() { $(this).dialog('close'); }
+  });
+  $('#confirmDialog').dialog('open');
+}
+
+function adminResetForm() {
+  document.getElementById('editId').value = '';
+  ['af_name','af_location','af_price','af_rating'].forEach(id => {
+    const el = document.getElementById(id); el.value = ''; el.classList.remove('err','ok');
+  });
+  document.getElementById('af_type').value = '';
+  document.getElementById('af_region').value = 'usa';
+  document.querySelectorAll('.af-amenity').forEach(c => c.checked = false);
+  document.querySelectorAll('#adminTableBody tr').forEach(r => r.classList.remove('editing'));
+  document.getElementById('adminFormTitle').textContent = '➕ Insert New Property Record';
+  document.getElementById('adminSubmitBtn').textContent = '💾 Insert Record';
+  document.querySelectorAll('.err-tip').forEach(e => e.style.display='none');
+}
+
+// Init admin table when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('adminTableBody')) renderAdminTable();
+});
+</script>
+</body>
+</html>

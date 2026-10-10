@@ -1,0 +1,1278 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Airbnb Modern Frontend – Assignment 3</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --red: #ff385c;
+        --red-dark: #e0283e;
+        --bg: #fafafa;
+        --white: #ffffff;
+        --dark: #111111;
+        --gray: #767676;
+        --border: #e0e0e0;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.2);
+        --radius: 16px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+      }
+
+      /* ───── NAVBAR ───── */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 70px;
+        background: var(--white);
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--red);
+        letter-spacing: -0.5px;
+      }
+
+      .nav-links a {
+        margin: 0 14px;
+        text-decoration: none;
+        color: var(--dark);
+        font-weight: 600;
+        font-size: 15px;
+        transition: color 0.25s;
+      }
+      .nav-links a:hover {
+        color: var(--red);
+      }
+
+      /* ───── HERO ───── */
+      .hero {
+        height: 520px;
+        background: url("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267")
+          center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        padding: 20px;
+        position: relative;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.35),
+          rgba(0, 0, 0, 0.55)
+        );
+      }
+      .hero > * {
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 56px;
+        font-weight: 800;
+        margin-bottom: 14px;
+        text-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+      }
+      .hero p {
+        font-size: 19px;
+        margin-bottom: 28px;
+        opacity: 0.9;
+      }
+
+      .search-box {
+        background: white;
+        padding: 10px 10px 10px 20px;
+        border-radius: 50px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .search-box input {
+        padding: 10px 6px;
+        border: none;
+        outline: none;
+        width: 240px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        color: var(--dark);
+      }
+      .search-box button {
+        background: var(--red);
+        border: none;
+        color: white;
+        padding: 12px 26px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 15px;
+        transition: background 0.25s;
+      }
+      .search-box button:hover {
+        background: var(--red-dark);
+      }
+
+      /* ───── SECTION TITLES ───── */
+      .section-title {
+        font-family: "Playfair Display", serif;
+        text-align: center;
+        font-size: 36px;
+        margin-top: 70px;
+        font-weight: 800;
+      }
+      .section-sub {
+        text-align: center;
+        color: var(--gray);
+        margin-top: 10px;
+        font-size: 16px;
+      }
+
+      /* ───── CAROUSEL ───── */
+      .carousel-section {
+        max-width: 980px;
+        margin: 50px auto 0;
+        padding: 0 20px;
+      }
+
+      .carousel-wrapper {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .carousel-track {
+        display: flex;
+        transition: transform 0.6s cubic-bezier(0.77, 0, 0.18, 1);
+      }
+
+      .carousel-slide {
+        min-width: 100%;
+        position: relative;
+      }
+
+      .carousel-slide img {
+        width: 100%;
+        height: 460px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .carousel-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+        color: white;
+        padding: 50px 36px 30px;
+      }
+
+      .carousel-caption h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .carousel-caption p {
+        font-size: 15px;
+        opacity: 0.85;
+      }
+
+      /* Prev/Next Arrows */
+      .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.92);
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.2s,
+          transform 0.2s;
+      }
+      .carousel-btn:hover {
+        background: var(--red);
+        color: white;
+        transform: translateY(-50%) scale(1.08);
+      }
+      .carousel-btn.prev {
+        left: 16px;
+      }
+      .carousel-btn.next {
+        right: 16px;
+      }
+
+      /* Dots */
+      .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          transform 0.3s;
+      }
+      .dot.active {
+        background: var(--red);
+        transform: scale(1.3);
+      }
+
+      /* Play / Pause Controls */
+      .carousel-controls {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .ctrl-btn {
+        padding: 9px 28px;
+        border-radius: 30px;
+        border: 2px solid var(--red);
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.25s;
+        font-family: "DM Sans", sans-serif;
+      }
+      .ctrl-btn.play {
+        background: var(--red);
+        color: white;
+      }
+      .ctrl-btn.play:hover {
+        background: var(--red-dark);
+        border-color: var(--red-dark);
+      }
+      .ctrl-btn.pause {
+        background: transparent;
+        color: var(--red);
+      }
+      .ctrl-btn.pause:hover {
+        background: var(--red);
+        color: white;
+      }
+
+      /* ───── LISTING CARDS ───── */
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 28px;
+        padding: 60px 80px;
+      }
+
+      .card {
+        width: 270px;
+        background: var(--white);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition:
+          transform 0.35s,
+          box-shadow 0.35s;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+      }
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+      }
+      .card-body {
+        padding: 18px;
+      }
+      .card-body h3 {
+        font-family: "Playfair Display", serif;
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+      .location {
+        font-size: 13px;
+        color: var(--gray);
+        margin-bottom: 10px;
+      }
+      .price {
+        color: var(--red);
+        font-weight: 700;
+        margin-bottom: 14px;
+        font-size: 16px;
+      }
+
+      .card-body button {
+        width: 100%;
+        padding: 11px;
+        border: none;
+        background: var(--red);
+        color: white;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        transition: background 0.25s;
+      }
+      .card-body button:hover {
+        background: var(--red-dark);
+      }
+
+      /* ───── FEATURES ───── */
+      .features {
+        background: var(--white);
+        padding: 60px 40px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 60px;
+      }
+      .feature {
+        text-align: center;
+        max-width: 220px;
+      }
+      .feature .icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+      }
+      .feature h3 {
+        margin: 10px 0 8px;
+        color: var(--red);
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .feature p {
+        font-size: 14px;
+        color: var(--gray);
+        line-height: 1.6;
+      }
+
+      /* ───── FOOTER ───── */
+      .footer {
+        background: #111;
+        color: white;
+        text-align: center;
+        padding: 30px;
+        margin-top: 40px;
+      }
+      .footer p {
+        opacity: 0.7;
+        font-size: 14px;
+      }
+
+      /* ───── MODAL BASE ───── */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.55);
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+        backdrop-filter: blur(3px);
+      }
+
+      .modal-content {
+        background: white;
+        padding: 36px 32px;
+        border-radius: 20px;
+        width: 360px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        animation: popIn 0.3s ease;
+      }
+
+      @keyframes popIn {
+        from {
+          transform: scale(0.88);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 18px;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--gray);
+        line-height: 1;
+        background: none;
+        border: none;
+      }
+      .close-btn:hover {
+        color: var(--dark);
+      }
+
+      .modal-content h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+        font-weight: 800;
+        margin-bottom: 22px;
+        color: var(--dark);
+      }
+
+      /* ───── FORM INPUTS (shared) ───── */
+      .form-group {
+        margin-bottom: 14px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #444;
+      }
+
+      .form-group input,
+      .form-group select,
+      .form-group textarea {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.8px solid var(--border);
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s;
+        background: #fafafa;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus,
+      .form-group textarea:focus {
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.12);
+        background: white;
+      }
+
+      /* Validation States */
+      .form-group input.invalid,
+      .form-group select.invalid,
+      .form-group textarea.invalid {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+      }
+      .form-group input.valid,
+      .form-group select.valid,
+      .form-group textarea.valid {
+        border-color: #43a047;
+        box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
+      }
+
+      .error-msg {
+        font-size: 12px;
+        color: #e53935;
+        margin-top: 4px;
+        display: none;
+      }
+      .error-msg.show {
+        display: block;
+      }
+
+      .modal-content .submit-btn {
+        width: 100%;
+        padding: 13px;
+        background: var(--red);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 15px;
+        font-family: "DM Sans", sans-serif;
+        margin-top: 6px;
+        transition: background 0.25s;
+      }
+      .modal-content .submit-btn:hover {
+        background: var(--red-dark);
+      }
+
+      #loginMessage,
+      #bookMessage {
+        margin-top: 14px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #43a047;
+        min-height: 20px;
+      }
+
+      /* ───── RESPONSIVE ───── */
+      @media (max-width: 900px) {
+        .navbar {
+          padding: 16px 24px;
+        }
+        .nav-links a {
+          margin: 0 8px;
+          font-size: 13px;
+        }
+        .hero h1 {
+          font-size: 36px;
+        }
+        .container {
+          padding: 40px 20px;
+        }
+        .carousel-slide img {
+          height: 300px;
+        }
+        .modal-content {
+          width: 94vw;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .navbar {
+          flex-direction: column;
+          gap: 12px;
+        }
+        .nav-links {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .hero h1 {
+          font-size: 28px;
+        }
+        .search-box {
+          flex-direction: column;
+          border-radius: 16px;
+        }
+        .search-box input {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+      <div class="logo">airbnb</div>
+      <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Explore</a>
+        <a href="#">Listings</a>
+        <a href="#">Bookings</a>
+        <a href="#" id="loginBtn">Login</a>
+        <a href="#">Register</a>
+        <a href="#">Contact</a>
+      </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <div class="hero">
+      <h1>Find your next stay</h1>
+      <p>Search low prices on homes, apartments and much more</p>
+      <div class="search-box">
+        <input type="text" placeholder="Where are you going?" />
+        <button>Search</button>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: CAROUSEL ===== -->
+    <h2 class="section-title">Explore Destinations</h2>
+    <p class="section-sub">
+      Swipe through our most beautiful properties worldwide
+    </p>
+
+    <section class="carousel-section">
+      <div class="carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750"
+              alt="Private Villa Bali"
+            />
+            <div class="carousel-caption">
+              <h3>Private Villa — Bali, Indonesia</h3>
+              <p>Secluded tropical luxury with private pool &amp; ocean view</p>
+            </div>
+          </div>
+
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1505691938895-1758d7feb511"
+              alt="Beach House California"
+            />
+            <div class="carousel-caption">
+              <h3>Luxury Beach House — California, USA</h3>
+              <p>Wake up to the sound of waves every morning</p>
+            </div>
+          </div>
+
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1493809842364-78817add7ffb"
+              alt="Mountain Cabin"
+            />
+            <div class="carousel-caption">
+              <h3>Mountain Cabin — Switzerland</h3>
+              <p>Cozy alpine retreat surrounded by snow-capped peaks</p>
+            </div>
+          </div>
+
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1449844908441-8829872d2607"
+              alt="City Apartment"
+            />
+            <div class="carousel-caption">
+              <h3>Modern City Apartment — New York, USA</h3>
+              <p>Skyline views, walking distance to all major attractions</p>
+            </div>
+          </div>
+
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4"
+              alt="Resort Pool"
+            />
+            <div class="carousel-caption">
+              <h3>Infinity Pool Resort — Santorini, Greece</h3>
+              <p>Breathtaking Aegean Sea views from your private terrace</p>
+            </div>
+          </div>
+        </div>
+        <!-- /track -->
+
+        <button class="carousel-btn prev" id="prevBtn">&#8592;</button>
+        <button class="carousel-btn next" id="nextBtn">&#8594;</button>
+      </div>
+      <!-- /wrapper -->
+
+      <!-- Dots -->
+      <div class="carousel-dots" id="carouselDots"></div>
+
+      <!-- Play / Pause -->
+      <div class="carousel-controls">
+        <button class="ctrl-btn play" id="playBtn">▶ Play</button>
+        <button class="ctrl-btn pause" id="pauseBtn">⏸ Pause</button>
+      </div>
+    </section>
+
+    <!-- ===== SECTION: LISTINGS ===== -->
+    <h2 class="section-title">Popular Stays</h2>
+    <p class="section-sub">Explore the most popular homes available</p>
+
+    <div class="container">
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1505691938895-1758d7feb511"
+          alt="Beach House"
+        />
+        <div class="card-body">
+          <h3>Luxury Beach House</h3>
+          <p class="location">📍 California, USA</p>
+          <p class="price">$120 / night</p>
+          <button onclick="openBookModal('Luxury Beach House', '$120/night')">
+            Book Now
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1449844908441-8829872d2607"
+          alt="City Apartment"
+        />
+        <div class="card-body">
+          <h3>Modern City Apartment</h3>
+          <p class="location">📍 New York, USA</p>
+          <p class="price">$150 / night</p>
+          <button
+            onclick="openBookModal('Modern City Apartment', '$150/night')"
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1493809842364-78817add7ffb"
+          alt="Mountain Cabin"
+        />
+        <div class="card-body">
+          <h3>Mountain Cabin</h3>
+          <p class="location">📍 Switzerland</p>
+          <p class="price">$95 / night</p>
+          <button onclick="openBookModal('Mountain Cabin', '$95/night')">
+            Book Now
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750"
+          alt="Private Villa"
+        />
+        <div class="card-body">
+          <h3>Private Villa</h3>
+          <p class="location">📍 Bali, Indonesia</p>
+          <p class="price">$220 / night</p>
+          <button onclick="openBookModal('Private Villa', '$220/night')">
+            Book Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FEATURES ===== -->
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🏡</div>
+        <h3>Unique Homes</h3>
+        <p>Stay in beautiful homes and apartments around the world.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔒</div>
+        <h3>Secure Booking</h3>
+        <p>Safe and trusted booking process for every guest.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">💰</div>
+        <h3>Best Prices</h3>
+        <p>Find great places at unbeatable affordable prices.</p>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+      <p>
+        © 2026 Airbnb Frontend Project — Web Technologies CSC336 | COMSATS
+        University Islamabad, Attock Campus
+      </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL 1: LOGIN                                               -->
+    <!-- ============================================================ -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <button class="close-btn" id="loginCloseBtn">&times;</button>
+        <h2>Welcome Back</h2>
+
+        <div class="form-group">
+          <label for="loginName">Full Name</label>
+          <input type="text" id="loginName" placeholder="e.g. Ali Hassan" />
+          <div class="error-msg" id="nameErr">
+            Please enter your name (at least 3 characters).
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="you@email.com" />
+          <div class="error-msg" id="emailErr">
+            Please enter a valid email address.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Minimum 6 characters"
+          />
+          <div class="error-msg" id="passErr">
+            Password must be at least 6 characters.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginMood">How are you feeling today?</label>
+          <select id="loginMood">
+            <option value="">Select your mood</option>
+            <option value="happy">😊 Happy</option>
+            <option value="tired">😴 Tired</option>
+            <option value="busy">💼 Busy</option>
+            <option value="excited">🤩 Excited</option>
+          </select>
+          <div class="error-msg" id="moodErr">Please select your mood.</div>
+        </div>
+
+        <button class="submit-btn" id="loginSubmitBtn">Login</button>
+        <p id="loginMessage"></p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL 2: BOOKING FORM                                        -->
+    <!-- ============================================================ -->
+    <div id="bookModal" class="modal">
+      <div class="modal-content">
+        <button class="close-btn" id="bookCloseBtn">&times;</button>
+        <h2>Book Your Stay</h2>
+        <p
+          style="color: var(--gray); font-size: 14px; margin-bottom: 20px"
+          id="bookingPropertyLabel"
+        ></p>
+
+        <div class="form-group">
+          <label for="bookName">Full Name</label>
+          <input type="text" id="bookName" placeholder="Your full name" />
+          <div class="error-msg" id="bNameErr">
+            Full name is required (min 3 chars).
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookEmail">Email Address</label>
+          <input type="email" id="bookEmail" placeholder="you@email.com" />
+          <div class="error-msg" id="bEmailErr">Valid email is required.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookPhone">Phone Number</label>
+          <input type="tel" id="bookPhone" placeholder="e.g. +92 300 1234567" />
+          <div class="error-msg" id="bPhoneErr">
+            Enter a valid phone number (min 10 digits).
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookCheckin">Check-in Date</label>
+          <input type="date" id="bookCheckin" />
+          <div class="error-msg" id="bCheckinErr">
+            Check-in date is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookCheckout">Check-out Date</label>
+          <input type="date" id="bookCheckout" />
+          <div class="error-msg" id="bCheckoutErr">
+            Check-out must be after check-in.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookGuests">Number of Guests</label>
+          <select id="bookGuests">
+            <option value="">Select guests</option>
+            <option value="1">1 Guest</option>
+            <option value="2">2 Guests</option>
+            <option value="3">3 Guests</option>
+            <option value="4">4+ Guests</option>
+          </select>
+          <div class="error-msg" id="bGuestsErr">
+            Please select number of guests.
+          </div>
+        </div>
+
+        <button class="submit-btn" id="bookSubmitBtn">Confirm Booking</button>
+        <p id="bookMessage"></p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT                                                   -->
+    <!-- ============================================================ -->
+    <script>
+      /* ──────────────────────────────────────────────────────────── 
+       1. CAROUSEL
+    ────────────────────────────────────────────────────────────── */
+      const track = document.getElementById("carouselTrack");
+      const slides = track.querySelectorAll(".carousel-slide");
+      const dotsWrap = document.getElementById("carouselDots");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const playBtn = document.getElementById("playBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+
+      let currentIndex = 0;
+      let autoTimer = null;
+      const INTERVAL = 3500;
+
+      // Build dots dynamically
+      slides.forEach((_, i) => {
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        if (i === 0) dot.classList.add("active");
+        dot.addEventListener("click", () => goTo(i));
+        dotsWrap.appendChild(dot);
+      });
+
+      function goTo(index) {
+        // Wrap around
+        if (index >= slides.length) index = 0;
+        if (index < 0) index = slides.length - 1;
+
+        currentIndex = index;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        // Update dots
+        dotsWrap.querySelectorAll(".dot").forEach((d, i) => {
+          d.classList.toggle("active", i === currentIndex);
+        });
+      }
+
+      function goNext() {
+        goTo(currentIndex + 1);
+      }
+      function goPrev() {
+        goTo(currentIndex - 1);
+      }
+
+      // Arrow buttons
+      nextBtn.addEventListener("click", () => {
+        goNext();
+        resetTimer();
+      });
+      prevBtn.addEventListener("click", () => {
+        goPrev();
+        resetTimer();
+      });
+
+      // Auto-play
+      function startPlay() {
+        if (autoTimer) return; // already running
+        autoTimer = setInterval(goNext, INTERVAL);
+        playBtn.style.opacity = "0.5";
+        pauseBtn.style.opacity = "1";
+      }
+
+      function stopPlay() {
+        clearInterval(autoTimer);
+        autoTimer = null;
+        playBtn.style.opacity = "1";
+        pauseBtn.style.opacity = "0.5";
+      }
+
+      function resetTimer() {
+        if (autoTimer) {
+          stopPlay();
+          startPlay();
+        }
+      }
+
+      playBtn.addEventListener("click", startPlay);
+      pauseBtn.addEventListener("click", stopPlay);
+
+      // Start automatically on page load
+      startPlay();
+
+      /* ──────────────────────────────────────────────────────────── 
+       HELPERS: Validation utilities
+    ────────────────────────────────────────────────────────────── */
+      function setValid(input, errEl) {
+        input.classList.remove("invalid");
+        input.classList.add("valid");
+        errEl.classList.remove("show");
+      }
+
+      function setInvalid(input, errEl) {
+        input.classList.remove("valid");
+        input.classList.add("invalid");
+        errEl.classList.add("show");
+      }
+
+      function clearState(input, errEl) {
+        input.classList.remove("valid", "invalid");
+        errEl.classList.remove("show");
+      }
+
+      function isValidEmail(val) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+      }
+
+      function isValidPhone(val) {
+        const digits = val.replace(/\D/g, "");
+        return digits.length >= 10;
+      }
+
+      /* ──────────────────────────────────────────────────────────── 
+       2. LOGIN MODAL & FORM VALIDATION
+    ────────────────────────────────────────────────────────────── */
+      const loginModal = document.getElementById("loginModal");
+      const loginCloseBtn = document.getElementById("loginCloseBtn");
+      const loginBtn = document.getElementById("loginBtn");
+
+      const loginName = document.getElementById("loginName");
+      const loginEmail = document.getElementById("loginEmail");
+      const loginPassword = document.getElementById("loginPassword");
+      const loginMood = document.getElementById("loginMood");
+      const loginMessage = document.getElementById("loginMessage");
+
+      // Open / close
+      loginBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        loginModal.style.display = "flex";
+      });
+      loginCloseBtn.addEventListener("click", () => closeLoginModal());
+      loginModal.addEventListener("click", (e) => {
+        if (e.target === loginModal) closeLoginModal();
+      });
+
+      function closeLoginModal() {
+        loginModal.style.display = "none";
+        loginMessage.textContent = "";
+        [loginName, loginEmail, loginPassword, loginMood].forEach((el) => {
+          clearState(el, el.nextElementSibling);
+          el.value = "";
+        });
+      }
+
+      // Live validation
+      loginName.addEventListener("input", () => {
+        loginName.value.trim().length >= 3
+          ? setValid(loginName, document.getElementById("nameErr"))
+          : setInvalid(loginName, document.getElementById("nameErr"));
+      });
+
+      loginEmail.addEventListener("input", () => {
+        isValidEmail(loginEmail.value.trim())
+          ? setValid(loginEmail, document.getElementById("emailErr"))
+          : setInvalid(loginEmail, document.getElementById("emailErr"));
+      });
+
+      loginPassword.addEventListener("input", () => {
+        loginPassword.value.length >= 6
+          ? setValid(loginPassword, document.getElementById("passErr"))
+          : setInvalid(loginPassword, document.getElementById("passErr"));
+      });
+
+      loginMood.addEventListener("change", () => {
+        loginMood.value
+          ? setValid(loginMood, document.getElementById("moodErr"))
+          : setInvalid(loginMood, document.getElementById("moodErr"));
+      });
+
+      // Submit
+      document
+        .getElementById("loginSubmitBtn")
+        .addEventListener("click", () => {
+          let valid = true;
+
+          if (loginName.value.trim().length < 3) {
+            setInvalid(loginName, document.getElementById("nameErr"));
+            valid = false;
+          } else setValid(loginName, document.getElementById("nameErr"));
+
+          if (!isValidEmail(loginEmail.value.trim())) {
+            setInvalid(loginEmail, document.getElementById("emailErr"));
+            valid = false;
+          } else setValid(loginEmail, document.getElementById("emailErr"));
+
+          if (loginPassword.value.length < 6) {
+            setInvalid(loginPassword, document.getElementById("passErr"));
+            valid = false;
+          } else setValid(loginPassword, document.getElementById("passErr"));
+
+          if (!loginMood.value) {
+            setInvalid(loginMood, document.getElementById("moodErr"));
+            valid = false;
+          } else setValid(loginMood, document.getElementById("moodErr"));
+
+          if (!valid) return;
+
+          // Greeting logic
+          const hour = new Date().getHours();
+          const greeting =
+            hour < 12
+              ? "Good Morning"
+              : hour < 17
+                ? "Good Afternoon"
+                : hour < 20
+                  ? "Good Evening"
+                  : "Good Night";
+
+          const moodMessages = {
+            happy: "Glad you're feeling happy! Enjoy your stay 😊",
+            tired: "You seem tired — hope a cozy stay recharges you 😴",
+            busy: "Stay focused — great things are happening 💼",
+            excited: "Your excitement is contagious! Adventure awaits 🤩",
+          };
+
+          loginMessage.style.color = "#43a047";
+          loginMessage.textContent = `${greeting}, ${loginName.value.trim()}! ${moodMessages[loginMood.value]}`;
+        });
+
+      /* ──────────────────────────────────────────────────────────── 
+       3. BOOKING MODAL & FORM VALIDATION
+    ────────────────────────────────────────────────────────────── */
+      const bookModal = document.getElementById("bookModal");
+      const bookCloseBtn = document.getElementById("bookCloseBtn");
+      const bookMessage = document.getElementById("bookMessage");
+
+      const bookName = document.getElementById("bookName");
+      const bookEmail = document.getElementById("bookEmail");
+      const bookPhone = document.getElementById("bookPhone");
+      const bookCheckin = document.getElementById("bookCheckin");
+      const bookCheckout = document.getElementById("bookCheckout");
+      const bookGuests = document.getElementById("bookGuests");
+
+      function openBookModal(property, price) {
+        bookModal.style.display = "flex";
+        document.getElementById("bookingPropertyLabel").textContent =
+          `📌 ${property} — ${price}`;
+        bookMessage.textContent = "";
+        // Set min date to today
+        const today = new Date().toISOString().split("T")[0];
+        bookCheckin.min = today;
+        bookCheckout.min = today;
+      }
+
+      bookCloseBtn.addEventListener("click", () => {
+        bookModal.style.display = "none";
+      });
+      bookModal.addEventListener("click", (e) => {
+        if (e.target === bookModal) bookModal.style.display = "none";
+      });
+
+      // Live validation
+      bookName.addEventListener("input", () =>
+        bookName.value.trim().length >= 3
+          ? setValid(bookName, document.getElementById("bNameErr"))
+          : setInvalid(bookName, document.getElementById("bNameErr")),
+      );
+      bookEmail.addEventListener("input", () =>
+        isValidEmail(bookEmail.value.trim())
+          ? setValid(bookEmail, document.getElementById("bEmailErr"))
+          : setInvalid(bookEmail, document.getElementById("bEmailErr")),
+      );
+      bookPhone.addEventListener("input", () =>
+        isValidPhone(bookPhone.value)
+          ? setValid(bookPhone, document.getElementById("bPhoneErr"))
+          : setInvalid(bookPhone, document.getElementById("bPhoneErr")),
+      );
+      bookGuests.addEventListener("change", () =>
+        bookGuests.value
+          ? setValid(bookGuests, document.getElementById("bGuestsErr"))
+          : setInvalid(bookGuests, document.getElementById("bGuestsErr")),
+      );
+
+      bookCheckin.addEventListener("change", () => {
+        if (bookCheckin.value) {
+          setValid(bookCheckin, document.getElementById("bCheckinErr"));
+          bookCheckout.min = bookCheckin.value;
+        } else {
+          setInvalid(bookCheckin, document.getElementById("bCheckinErr"));
+        }
+      });
+
+      bookCheckout.addEventListener("change", () => {
+        if (
+          bookCheckout.value &&
+          bookCheckin.value &&
+          bookCheckout.value > bookCheckin.value
+        ) {
+          setValid(bookCheckout, document.getElementById("bCheckoutErr"));
+        } else {
+          setInvalid(bookCheckout, document.getElementById("bCheckoutErr"));
+        }
+      });
+
+      document.getElementById("bookSubmitBtn").addEventListener("click", () => {
+        let valid = true;
+
+        if (bookName.value.trim().length < 3) {
+          setInvalid(bookName, document.getElementById("bNameErr"));
+          valid = false;
+        } else setValid(bookName, document.getElementById("bNameErr"));
+        if (!isValidEmail(bookEmail.value.trim())) {
+          setInvalid(bookEmail, document.getElementById("bEmailErr"));
+          valid = false;
+        } else setValid(bookEmail, document.getElementById("bEmailErr"));
+        if (!isValidPhone(bookPhone.value)) {
+          setInvalid(bookPhone, document.getElementById("bPhoneErr"));
+          valid = false;
+        } else setValid(bookPhone, document.getElementById("bPhoneErr"));
+        if (!bookCheckin.value) {
+          setInvalid(bookCheckin, document.getElementById("bCheckinErr"));
+          valid = false;
+        } else setValid(bookCheckin, document.getElementById("bCheckinErr"));
+        if (!bookCheckout.value || bookCheckout.value <= bookCheckin.value) {
+          setInvalid(bookCheckout, document.getElementById("bCheckoutErr"));
+          valid = false;
+        } else setValid(bookCheckout, document.getElementById("bCheckoutErr"));
+        if (!bookGuests.value) {
+          setInvalid(bookGuests, document.getElementById("bGuestsErr"));
+          valid = false;
+        } else setValid(bookGuests, document.getElementById("bGuestsErr"));
+
+        if (!valid) return;
+
+        bookMessage.style.color = "#43a047";
+        bookMessage.textContent = `✅ Booking confirmed for ${bookName.value.trim()}! A confirmation will be sent to ${bookEmail.value.trim()}.`;
+
+        // Reset form after 3s
+        setTimeout(() => {
+          bookModal.style.display = "none";
+          [
+            bookName,
+            bookEmail,
+            bookPhone,
+            bookCheckin,
+            bookCheckout,
+            bookGuests,
+          ].forEach((el) => {
+            el.value = "";
+            clearState(el, el.nextElementSibling);
+          });
+          bookMessage.textContent = "";
+        }, 3000);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Airbnb Modern Frontend – Assignment 4</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- jQuery UI CSS (for Dialog widget) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"
+    />
+
+    <!-- jQuery core + jQuery UI -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
+    <style>
+      :root {
+        --red: #ff385c;
+        --red-dark: #e0283e;
+        --bg: #fafafa;
+        --white: #ffffff;
+        --dark: #111111;
+        --gray: #767676;
+        --border: #e0e0e0;
+        --green: #43a047;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.2);
+        --radius: 16px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--dark);
+      }
+
+      /* ── NAVBAR ── */
+      .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 70px;
+        background: var(--white);
+        box-shadow: var(--shadow-sm);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .logo {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--red);
+      }
+      .nav-links a {
+        margin: 0 14px;
+        text-decoration: none;
+        color: var(--dark);
+        font-weight: 600;
+        font-size: 15px;
+        transition: color 0.25s;
+      }
+      .nav-links a:hover {
+        color: var(--red);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        height: 520px;
+        background: url("https://images.unsplash.com/photo-1522708323590-d24dbb6b0267")
+          center/cover no-repeat;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        padding: 20px;
+        position: relative;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.35),
+          rgba(0, 0, 0, 0.55)
+        );
+      }
+      .hero > * {
+        position: relative;
+        z-index: 2;
+      }
+      .hero h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 56px;
+        font-weight: 800;
+        margin-bottom: 14px;
+        text-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+      }
+      .hero p {
+        font-size: 19px;
+        margin-bottom: 28px;
+        opacity: 0.9;
+      }
+      .search-box {
+        background: white;
+        padding: 10px 10px 10px 20px;
+        border-radius: 50px;
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .search-box input {
+        padding: 10px 6px;
+        border: none;
+        outline: none;
+        width: 240px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+      }
+      .search-box button {
+        background: var(--red);
+        border: none;
+        color: white;
+        padding: 12px 26px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 15px;
+        transition: background 0.25s;
+      }
+      .search-box button:hover {
+        background: var(--red-dark);
+      }
+
+      /* ── SECTION TITLES ── */
+      .section-title {
+        font-family: "Playfair Display", serif;
+        text-align: center;
+        font-size: 36px;
+        margin-top: 70px;
+        font-weight: 800;
+      }
+      .section-sub {
+        text-align: center;
+        color: var(--gray);
+        margin-top: 10px;
+        font-size: 16px;
+      }
+
+      /* ── CAROUSEL ── */
+      .carousel-section {
+        max-width: 980px;
+        margin: 50px auto 0;
+        padding: 0 20px;
+      }
+      .carousel-wrapper {
+        position: relative;
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
+      .carousel-track {
+        display: flex;
+        transition: transform 0.6s cubic-bezier(0.77, 0, 0.18, 1);
+      }
+      .carousel-slide {
+        min-width: 100%;
+        position: relative;
+      }
+      .carousel-slide img {
+        width: 100%;
+        height: 460px;
+        object-fit: cover;
+        display: block;
+      }
+      .carousel-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.75));
+        color: white;
+        padding: 50px 36px 30px;
+      }
+      .carousel-caption h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .carousel-caption p {
+        font-size: 15px;
+        opacity: 0.85;
+      }
+      .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.92);
+        border: none;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 10;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+          background 0.2s,
+          transform 0.2s;
+      }
+      .carousel-btn:hover {
+        background: var(--red);
+        color: white;
+        transform: translateY(-50%) scale(1.08);
+      }
+      .carousel-btn.prev {
+        left: 16px;
+      }
+      .carousel-btn.next {
+        right: 16px;
+      }
+      .carousel-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--border);
+        cursor: pointer;
+        transition:
+          background 0.3s,
+          transform 0.3s;
+      }
+      .dot.active {
+        background: var(--red);
+        transform: scale(1.3);
+      }
+      .carousel-controls {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .ctrl-btn {
+        padding: 9px 28px;
+        border-radius: 30px;
+        border: 2px solid var(--red);
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.25s;
+        font-family: "DM Sans", sans-serif;
+      }
+      .ctrl-btn.play {
+        background: var(--red);
+        color: white;
+      }
+      .ctrl-btn.play:hover {
+        background: var(--red-dark);
+        border-color: var(--red-dark);
+      }
+      .ctrl-btn.pause {
+        background: transparent;
+        color: var(--red);
+      }
+      .ctrl-btn.pause:hover {
+        background: var(--red);
+        color: white;
+      }
+
+      /* ── CARDS ── */
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 28px;
+        padding: 60px 80px;
+      }
+      .card {
+        width: 270px;
+        background: var(--white);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition:
+          transform 0.35s,
+          box-shadow 0.35s;
+      }
+      .card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+      }
+      .card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        display: block;
+      }
+      .card-body {
+        padding: 18px;
+      }
+      .card-body h3 {
+        font-family: "Playfair Display", serif;
+        margin-bottom: 6px;
+        font-size: 18px;
+      }
+      .location {
+        font-size: 13px;
+        color: var(--gray);
+        margin-bottom: 10px;
+      }
+      .price {
+        color: var(--red);
+        font-weight: 700;
+        margin-bottom: 14px;
+        font-size: 16px;
+      }
+      .card-body button {
+        width: 100%;
+        padding: 11px;
+        border: none;
+        background: var(--red);
+        color: white;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        transition: background 0.25s;
+      }
+      .card-body button:hover {
+        background: var(--red-dark);
+      }
+
+      /* ── FEATURES ── */
+      .features {
+        background: var(--white);
+        padding: 60px 40px;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 60px;
+      }
+      .feature {
+        text-align: center;
+        max-width: 220px;
+      }
+      .feature .icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+      }
+      .feature h3 {
+        margin: 10px 0 8px;
+        color: var(--red);
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .feature p {
+        font-size: 14px;
+        color: var(--gray);
+        line-height: 1.6;
+      }
+
+      /* ── FOOTER ── */
+      .footer {
+        background: #111;
+        color: white;
+        text-align: center;
+        padding: 30px;
+        margin-top: 40px;
+      }
+      .footer p {
+        opacity: 0.7;
+        font-size: 14px;
+      }
+
+      /* ── MODAL BASE ── */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.55);
+        justify-content: center;
+        align-items: center;
+        z-index: 200;
+        backdrop-filter: blur(3px);
+      }
+      .modal-content {
+        background: white;
+        padding: 36px 32px;
+        border-radius: 20px;
+        width: 400px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        animation: popIn 0.3s ease;
+      }
+      @keyframes popIn {
+        from {
+          transform: scale(0.88);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .close-btn {
+        position: absolute;
+        top: 12px;
+        right: 18px;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--gray);
+        line-height: 1;
+        background: none;
+        border: none;
+      }
+      .close-btn:hover {
+        color: var(--dark);
+      }
+      .modal-content h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 26px;
+        font-weight: 800;
+        margin-bottom: 22px;
+      }
+
+      /* ── FORM GROUPS ── */
+      .form-group {
+        margin-bottom: 16px;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #444;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.8px solid var(--border);
+        border-radius: 10px;
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.25s,
+          box-shadow 0.25s;
+        background: #fafafa;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.12);
+        background: white;
+      }
+
+      /* ── VALIDATION STATES ── */
+      .form-group input.invalid,
+      .form-group select.invalid {
+        border-color: #e53935;
+        box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
+      }
+      .form-group input.valid,
+      .form-group select.valid {
+        border-color: var(--green);
+        box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.1);
+      }
+
+      /* ── ERROR SPAN (hidden by default, jQuery will show/hide) ── */
+      .err-msg {
+        display: none; /* jQuery controls visibility */
+        font-size: 13px;
+        color: #cc0000; /* red like sample */
+        font-weight: 400;
+        font-style: italic;
+        margin-top: 4px;
+      }
+
+      /* ── SUBMIT BTN ── */
+      .submit-btn {
+        width: 100%;
+        padding: 13px;
+        background: var(--red);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 15px;
+        font-family: "DM Sans", sans-serif;
+        margin-top: 8px;
+        transition: background 0.25s;
+      }
+      .submit-btn:hover {
+        background: var(--red-dark);
+      }
+
+      /* ── JQUERY UI DIALOG OVERRIDES ── */
+      #confirmDialog {
+        display: none;
+        font-family: "DM Sans", sans-serif;
+        text-align: center;
+        padding: 10px 0;
+      }
+      #confirmDialog .dialog-icon {
+        font-size: 52px;
+        margin-bottom: 12px;
+      }
+      #confirmDialog h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 22px;
+        color: var(--dark);
+        margin-bottom: 10px;
+      }
+      #confirmDialog p {
+        color: var(--gray);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .ui-dialog {
+        border-radius: 18px !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3) !important;
+        border: none !important;
+        font-family: "DM Sans", sans-serif !important;
+        overflow: hidden !important;
+      }
+      .ui-dialog-titlebar {
+        background: var(--red) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 14px 20px !important;
+        font-family: "Playfair Display", serif !important;
+        font-size: 17px !important;
+      }
+      .ui-dialog-titlebar-close {
+        color: white !important;
+        background: transparent !important;
+        border: none !important;
+      }
+      .ui-button {
+        background: var(--red) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        font-family: "DM Sans", sans-serif !important;
+        font-weight: 700 !important;
+        padding: 8px 28px !important;
+        cursor: pointer !important;
+        transition: background 0.25s !important;
+      }
+      .ui-button:hover {
+        background: var(--red-dark) !important;
+      }
+      .ui-resizable-handle {
+        background: var(--red) !important;
+        opacity: 0.3;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 900px) {
+        .navbar {
+          padding: 16px 24px;
+        }
+        .nav-links a {
+          margin: 0 8px;
+          font-size: 13px;
+        }
+        .hero h1 {
+          font-size: 36px;
+        }
+        .container {
+          padding: 40px 20px;
+        }
+        .carousel-slide img {
+          height: 300px;
+        }
+        .modal-content {
+          width: 94vw;
+        }
+      }
+      @media (max-width: 600px) {
+        .navbar {
+          flex-direction: column;
+          gap: 12px;
+        }
+        .nav-links {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .hero h1 {
+          font-size: 28px;
+        }
+        .search-box {
+          flex-direction: column;
+          border-radius: 16px;
+        }
+        .search-box input {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+      <div class="logo">airbnb</div>
+      <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Explore</a>
+        <a href="#">Listings</a>
+        <a href="#">Bookings</a>
+        <a href="#" id="loginNavBtn">Login</a>
+        <a href="#">Register</a>
+        <a href="#">Contact</a>
+      </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <div class="hero">
+      <h1>Find your next stay</h1>
+      <p>Search low prices on homes, apartments and much more</p>
+      <div class="search-box">
+        <input type="text" placeholder="Where are you going?" />
+        <button>Search</button>
+      </div>
+    </div>
+
+    <!-- ===== CAROUSEL ===== -->
+    <h2 class="section-title">Explore Destinations</h2>
+    <p class="section-sub">
+      Swipe through our most beautiful properties worldwide
+    </p>
+
+    <section class="carousel-section">
+      <div class="carousel-wrapper">
+        <div class="carousel-track" id="carouselTrack">
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750"
+              alt="Villa Bali"
+            />
+            <div class="carousel-caption">
+              <h3>Private Villa — Bali, Indonesia</h3>
+              <p>Secluded tropical luxury with private pool &amp; ocean view</p>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1505691938895-1758d7feb511"
+              alt="Beach House"
+            />
+            <div class="carousel-caption">
+              <h3>Luxury Beach House — California, USA</h3>
+              <p>Wake up to the sound of waves every morning</p>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1493809842364-78817add7ffb"
+              alt="Cabin"
+            />
+            <div class="carousel-caption">
+              <h3>Mountain Cabin — Switzerland</h3>
+              <p>Cozy alpine retreat surrounded by snow-capped peaks</p>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1449844908441-8829872d2607"
+              alt="Apartment"
+            />
+            <div class="carousel-caption">
+              <h3>Modern City Apartment — New York, USA</h3>
+              <p>Skyline views, walking distance to all major attractions</p>
+            </div>
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4"
+              alt="Santorini"
+            />
+            <div class="carousel-caption">
+              <h3>Infinity Pool Resort — Santorini, Greece</h3>
+              <p>Breathtaking Aegean Sea views from your private terrace</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-btn prev" id="prevBtn">&#8592;</button>
+        <button class="carousel-btn next" id="nextBtn">&#8594;</button>
+      </div>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <div class="carousel-controls">
+        <button class="ctrl-btn play" id="playBtn">&#9654; Play</button>
+        <button class="ctrl-btn pause" id="pauseBtn">&#9208; Pause</button>
+      </div>
+    </section>
+
+    <!-- ===== LISTINGS ===== -->
+    <h2 class="section-title">Popular Stays</h2>
+    <p class="section-sub">Explore the most popular homes available</p>
+
+    <div class="container">
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1505691938895-1758d7feb511"
+          alt="Beach House"
+        />
+        <div class="card-body">
+          <h3>Luxury Beach House</h3>
+          <p class="location">&#128205; California, USA</p>
+          <p class="price">$120 / night</p>
+          <button onclick="openBookModal('Luxury Beach House', '$120/night')">
+            Book Now
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1449844908441-8829872d2607"
+          alt="Apartment"
+        />
+        <div class="card-body">
+          <h3>Modern City Apartment</h3>
+          <p class="location">&#128205; New York, USA</p>
+          <p class="price">$150 / night</p>
+          <button
+            onclick="openBookModal('Modern City Apartment', '$150/night')"
+          >
+            Book Now
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1493809842364-78817add7ffb"
+          alt="Cabin"
+        />
+        <div class="card-body">
+          <h3>Mountain Cabin</h3>
+          <p class="location">&#128205; Switzerland</p>
+          <p class="price">$95 / night</p>
+          <button onclick="openBookModal('Mountain Cabin', '$95/night')">
+            Book Now
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <img
+          src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750"
+          alt="Villa"
+        />
+        <div class="card-body">
+          <h3>Private Villa</h3>
+          <p class="location">&#128205; Bali, Indonesia</p>
+          <p class="price">$220 / night</p>
+          <button onclick="openBookModal('Private Villa', '$220/night')">
+            Book Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FEATURES ===== -->
+    <div class="features">
+      <div class="feature">
+        <div class="icon">&#127969;</div>
+        <h3>Unique Homes</h3>
+        <p>Stay in beautiful homes and apartments around the world.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#128274;</div>
+        <h3>Secure Booking</h3>
+        <p>Safe and trusted booking process for every guest.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">&#128176;</div>
+        <h3>Best Prices</h3>
+        <p>Find great places at unbeatable affordable prices.</p>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+      <p>
+        &#169; 2026 Airbnb Frontend Project &#8212; Web Technologies CSC336 |
+        COMSATS University Islamabad, Attock Campus
+      </p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+       MODAL 1: LOGIN
+  ════════════════════════════════════════════════════════ -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <button class="close-btn" id="loginCloseBtn">&times;</button>
+        <h2>Welcome Back</h2>
+
+        <div class="form-group">
+          <label for="loginName">Full Name</label>
+          <input type="text" id="loginName" placeholder="e.g. Ali Hassan" />
+          <!-- span for jQuery show/hide -->
+          <span class="err-msg" id="nameErr"
+            >Name must contain only letters.</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="you@email.com" />
+          <span class="err-msg" id="emailErr">Enter a valid email.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input
+            type="password"
+            id="loginPassword"
+            placeholder="Minimum 6 characters"
+          />
+          <span class="err-msg" id="passErr"
+            >Password must be at least 6 characters.</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="loginMood">How are you feeling today?</label>
+          <select id="loginMood">
+            <option value="">Select your mood</option>
+            <option value="happy">&#128522; Happy</option>
+            <option value="tired">&#128564; Tired</option>
+            <option value="busy">&#128188; Busy</option>
+            <option value="excited">&#129321; Excited</option>
+          </select>
+          <span class="err-msg" id="moodErr">Please select your mood.</span>
+        </div>
+
+        <button class="submit-btn" id="loginSubmitBtn">Login</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+       MODAL 2: BOOKING FORM
+  ════════════════════════════════════════════════════════ -->
+    <div id="bookModal" class="modal">
+      <div class="modal-content">
+        <button class="close-btn" id="bookCloseBtn">&times;</button>
+        <h2>Book Your Stay</h2>
+        <p
+          id="bookingPropertyLabel"
+          style="color: var(--gray); font-size: 14px; margin-bottom: 20px"
+        ></p>
+
+        <div class="form-group">
+          <label for="bookName">Full Name</label>
+          <input type="text" id="bookName" placeholder="Your full name" />
+          <span class="err-msg" id="bNameErr"
+            >Name must contain only letters.</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="bookEmail">Email Address</label>
+          <input type="email" id="bookEmail" placeholder="you@email.com" />
+          <span class="err-msg" id="bEmailErr">Enter a valid email.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="bookPhone">Phone Number</label>
+          <input type="tel" id="bookPhone" placeholder="e.g. +92 300 1234567" />
+          <span class="err-msg" id="bPhoneErr"
+            >Enter a valid phone number (min 10 digits).</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="bookCheckin">Check-in Date</label>
+          <input type="date" id="bookCheckin" />
+          <span class="err-msg" id="bCheckinErr"
+            >Check-in date is required.</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="bookCheckout">Check-out Date</label>
+          <input type="date" id="bookCheckout" />
+          <span class="err-msg" id="bCheckoutErr"
+            >Check-out date must be after check-in.</span
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="bookGuests">Number of Guests</label>
+          <select id="bookGuests">
+            <option value="">Select guests</option>
+            <option value="1">1 Guest</option>
+            <option value="2">2 Guests</option>
+            <option value="3">3 Guests</option>
+            <option value="4">4+ Guests</option>
+          </select>
+          <span class="err-msg" id="bGuestsErr"
+            >Please select number of guests.</span
+          >
+        </div>
+
+        <button class="submit-btn" id="bookSubmitBtn">Confirm Booking</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+       JQUERY UI CONFIRMATION DIALOG (hidden div)
+  ════════════════════════════════════════════════════════ -->
+    <div id="confirmDialog" title="">
+      <div class="dialog-icon" id="dialogIcon"></div>
+      <h3 id="dialogHeading"></h3>
+      <p id="dialogMsg"></p>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════
+       SCRIPTS
+  ════════════════════════════════════════════════════════ -->
+    <script>
+      $(function () {
+        /* ─────────────────────────────────────────────────────
+       
+    ───────────────────────────────────────────────────── */
+        const track = document.getElementById("carouselTrack");
+        const slides = track.querySelectorAll(".carousel-slide");
+        const dotsWrap = document.getElementById("carouselDots");
+        let currentIndex = 0,
+          autoTimer = null;
+        const INTERVAL = 3500;
+
+        slides.forEach((_, i) => {
+          const dot = document.createElement("div");
+          dot.classList.add("dot");
+          if (i === 0) dot.classList.add("active");
+          dot.addEventListener("click", () => goTo(i));
+          dotsWrap.appendChild(dot);
+        });
+
+        function goTo(index) {
+          if (index >= slides.length) index = 0;
+          if (index < 0) index = slides.length - 1;
+          currentIndex = index;
+          track.style.transform = `translateX(-${currentIndex * 100}%)`;
+          dotsWrap
+            .querySelectorAll(".dot")
+            .forEach((d, i) =>
+              d.classList.toggle("active", i === currentIndex),
+            );
+        }
+
+        document.getElementById("nextBtn").addEventListener("click", () => {
+          goTo(currentIndex + 1);
+          resetTimer();
+        });
+        document.getElementById("prevBtn").addEventListener("click", () => {
+          goTo(currentIndex - 1);
+          resetTimer();
+        });
+
+        function startPlay() {
+          if (autoTimer) return;
+          autoTimer = setInterval(() => goTo(currentIndex + 1), INTERVAL);
+          $("#playBtn").css("opacity", ".5");
+          $("#pauseBtn").css("opacity", "1");
+        }
+        function stopPlay() {
+          clearInterval(autoTimer);
+          autoTimer = null;
+          $("#playBtn").css("opacity", "1");
+          $("#pauseBtn").css("opacity", ".5");
+        }
+        function resetTimer() {
+          if (autoTimer) {
+            stopPlay();
+            startPlay();
+          }
+        }
+
+        $("#playBtn").on("click", startPlay);
+        $("#pauseBtn").on("click", stopPlay);
+        startPlay();
+
+        /* ─────────────────────────────────────────────────────
+       HELPER FUNCTIONS
+    ───────────────────────────────────────────────────── */
+        function isValidEmail(v) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        }
+        function isValidPhone(v) {
+          return v.replace(/\D/g, "").length >= 10;
+        }
+
+        // Mark a field valid — jQuery .fadeOut() hides the error span
+        function markValid($input, $err) {
+          $input.removeClass("invalid").addClass("valid");
+          $err.fadeOut(250); // ← jQuery fadeOut
+        }
+
+        // Mark a field invalid — jQuery .fadeIn() shows the error span
+        function markInvalid($input, $err) {
+          $input.removeClass("valid").addClass("invalid");
+          $err.fadeIn(250); // ← jQuery fadeIn
+        }
+
+        // Reset field to neutral
+        function markClear($input, $err) {
+          $input.removeClass("valid invalid");
+          $err.hide(); // ← jQuery hide
+        }
+
+        /* ─────────────────────────────────────────────────────
+       jQuery UI CONFIRMATION DIALOG (shared between both forms)
+    ───────────────────────────────────────────────────── */
+        $("#confirmDialog").dialog({
+          autoOpen: false,
+          modal: true,
+          draggable: true, // ← draggable ✔
+          resizable: true, // ← resizable ✔
+          width: 400,
+          minHeight: 200,
+          show: { effect: "bounce", duration: 600 }, // ← animation ✔
+          hide: { effect: "fade", duration: 400 },
+          buttons: {
+            "OK ✓": function () {
+              $(this).dialog("close");
+            }, // ← OK button ✔
+          },
+        });
+
+        function showConfirmDialog(icon, title, heading, msg) {
+          $("#dialogIcon").text(icon);
+          $("#dialogHeading").text(heading);
+          $("#dialogMsg").html(msg);
+          $("#confirmDialog").dialog("option", "title", title);
+          $("#confirmDialog").dialog("open");
+        }
+
+        /* ─────────────────────────────────────────────────────
+       LOGIN MODAL
+    ───────────────────────────────────────────────────── */
+        $("#loginNavBtn").on("click", function (e) {
+          e.preventDefault();
+          $("#loginModal").css("display", "flex");
+        });
+
+        function closeLoginModal() {
+          $("#loginModal").hide();
+          $("#loginName, #loginEmail, #loginPassword, #loginMood").each(
+            function () {
+              markClear($(this), $(this).next(".err-msg"));
+              $(this).val("");
+            },
+          );
+        }
+
+        $("#loginCloseBtn").on("click", closeLoginModal);
+        $("#loginModal").on("click", function (e) {
+          if ($(e.target).is("#loginModal")) closeLoginModal();
+        });
+
+        // ── Live validation (jQuery .on('input') / .on('change')) ──
+
+        $("#loginName").on("input", function () {
+          const v = $(this).val().trim();
+          /^[A-Za-z\s]{3,}$/.test(v)
+            ? markValid($(this), $("#nameErr"))
+            : markInvalid($(this), $("#nameErr"));
+        });
+
+        $("#loginEmail").on("input", function () {
+          isValidEmail($(this).val().trim())
+            ? markValid($(this), $("#emailErr"))
+            : markInvalid($(this), $("#emailErr"));
+        });
+
+        $("#loginPassword").on("input", function () {
+          $(this).val().length >= 6
+            ? markValid($(this), $("#passErr"))
+            : markInvalid($(this), $("#passErr"));
+        });
+
+        $("#loginMood").on("change", function () {
+          $(this).val()
+            ? markValid($(this), $("#moodErr"))
+            : markInvalid($(this), $("#moodErr"));
+        });
+
+        // ── Submit ──
+        $("#loginSubmitBtn").on("click", function () {
+          let valid = true;
+
+          if (!/^[A-Za-z\s]{3,}$/.test($("#loginName").val().trim())) {
+            markInvalid($("#loginName"), $("#nameErr"));
+            valid = false;
+          } else markValid($("#loginName"), $("#nameErr"));
+          if (!isValidEmail($("#loginEmail").val().trim())) {
+            markInvalid($("#loginEmail"), $("#emailErr"));
+            valid = false;
+          } else markValid($("#loginEmail"), $("#emailErr"));
+          if ($("#loginPassword").val().length < 6) {
+            markInvalid($("#loginPassword"), $("#passErr"));
+            valid = false;
+          } else markValid($("#loginPassword"), $("#passErr"));
+          if (!$("#loginMood").val()) {
+            markInvalid($("#loginMood"), $("#moodErr"));
+            valid = false;
+          } else markValid($("#loginMood"), $("#moodErr"));
+
+          if (!valid) return;
+
+          // Build time-based greeting
+          const hour = new Date().getHours();
+          const greeting =
+            hour < 12
+              ? "🌅 Good Morning"
+              : hour < 17
+                ? "☀️ Good Afternoon"
+                : hour < 20
+                  ? "🌆 Good Evening"
+                  : "🌙 Good Night";
+
+          const moodMap = {
+            happy: {
+              emoji: "😊",
+              text: "Glad you're feeling happy! Enjoy exploring your next stay.",
+            },
+            tired: {
+              emoji: "😴",
+              text: "You seem a bit tired. Hope a cozy getaway recharges you!",
+            },
+            busy: {
+              emoji: "💼",
+              text: "Stay focused — great travels await you soon!",
+            },
+            excited: {
+              emoji: "🤩",
+              text: "Your excitement is contagious! Adventure is just around the corner.",
+            },
+          };
+
+          const mood = $("#loginMood").val();
+          const name = $("#loginName").val().trim();
+          const moodData = moodMap[mood];
+
+          closeLoginModal();
+          showConfirmDialog(
+            moodData.emoji,
+            "Welcome, " + name + "!",
+            greeting + ", " + name + "!",
+            "Thank you! You have entered the correct information.<br><br>" +
+              moodData.text,
+          );
+        });
+
+        /* ─────────────────────────────────────────────────────
+       BOOKING MODAL
+    ───────────────────────────────────────────────────── */
+        window.openBookModal = function (property, price) {
+          $("#bookingPropertyLabel").text("📌 " + property + " — " + price);
+          $("#bookModal").css("display", "flex");
+          const today = new Date().toISOString().split("T")[0];
+          $("#bookCheckin, #bookCheckout").attr("min", today);
+        };
+
+        function closeBookModal() {
+          $("#bookModal").hide();
+          $(
+            "#bookName, #bookEmail, #bookPhone, #bookCheckin, #bookCheckout, #bookGuests",
+          ).each(function () {
+            markClear($(this), $(this).next(".err-msg"));
+            $(this).val("");
+          });
+        }
+
+        $("#bookCloseBtn").on("click", closeBookModal);
+        $("#bookModal").on("click", function (e) {
+          if ($(e.target).is("#bookModal")) closeBookModal();
+        });
+
+        // ── Live validation ──
+
+        $("#bookName").on("input", function () {
+          /^[A-Za-z\s]{3,}$/.test($(this).val().trim())
+            ? markValid($(this), $("#bNameErr"))
+            : markInvalid($(this), $("#bNameErr"));
+        });
+
+        $("#bookEmail").on("input", function () {
+          isValidEmail($(this).val().trim())
+            ? markValid($(this), $("#bEmailErr"))
+            : markInvalid($(this), $("#bEmailErr"));
+        });
+
+        $("#bookPhone").on("input", function () {
+          isValidPhone($(this).val())
+            ? markValid($(this), $("#bPhoneErr"))
+            : markInvalid($(this), $("#bPhoneErr"));
+        });
+
+        $("#bookCheckin").on("change", function () {
+          if ($(this).val()) {
+            markValid($(this), $("#bCheckinErr"));
+            $("#bookCheckout").attr("min", $(this).val());
+          } else {
+            markInvalid($(this), $("#bCheckinErr"));
+          }
+        });
+
+        $("#bookCheckout").on("change", function () {
+          const ci = $("#bookCheckin").val(),
+            co = $(this).val();
+          co && ci && co > ci
+            ? markValid($(this), $("#bCheckoutErr"))
+            : markInvalid($(this), $("#bCheckoutErr"));
+        });
+
+        $("#bookGuests").on("change", function () {
+          $(this).val()
+            ? markValid($(this), $("#bGuestsErr"))
+            : markInvalid($(this), $("#bGuestsErr"));
+        });
+
+        // ── Submit ──
+        $("#bookSubmitBtn").on("click", function () {
+          let valid = true;
+          const ci = $("#bookCheckin").val(),
+            co = $("#bookCheckout").val();
+
+          if (!/^[A-Za-z\s]{3,}$/.test($("#bookName").val().trim())) {
+            markInvalid($("#bookName"), $("#bNameErr"));
+            valid = false;
+          } else markValid($("#bookName"), $("#bNameErr"));
+          if (!isValidEmail($("#bookEmail").val().trim())) {
+            markInvalid($("#bookEmail"), $("#bEmailErr"));
+            valid = false;
+          } else markValid($("#bookEmail"), $("#bEmailErr"));
+          if (!isValidPhone($("#bookPhone").val())) {
+            markInvalid($("#bookPhone"), $("#bPhoneErr"));
+            valid = false;
+          } else markValid($("#bookPhone"), $("#bPhoneErr"));
+          if (!ci) {
+            markInvalid($("#bookCheckin"), $("#bCheckinErr"));
+            valid = false;
+          } else markValid($("#bookCheckin"), $("#bCheckinErr"));
+          if (!co || co <= ci) {
+            markInvalid($("#bookCheckout"), $("#bCheckoutErr"));
+            valid = false;
+          } else markValid($("#bookCheckout"), $("#bCheckoutErr"));
+          if (!$("#bookGuests").val()) {
+            markInvalid($("#bookGuests"), $("#bGuestsErr"));
+            valid = false;
+          } else markValid($("#bookGuests"), $("#bGuestsErr"));
+
+          if (!valid) return;
+
+          closeBookModal();
+          showConfirmDialog(
+            "🏠",
+            "Booking Confirmed ✈",
+            "You're all set!",
+            "Thank you! You have entered the correct information.<br>Your booking is confirmed. We'll see you soon!",
+          );
+        });
+      }); // end document.ready
+    </script>
+  </body>
+</html>
